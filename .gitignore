@@ -4,3 +4,4 @@ composer.lock
 .idea
 .vscode
 .phpunit.result.cache
+.claude/settings.local.json
