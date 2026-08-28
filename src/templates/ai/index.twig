@@ -1,0 +1,228 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms.twig" as forms %}
+
+{% set selectedSubnavItem = 'ai' %}
+{% set title = "AI translations"|t('translator-pro') %}
+
+{% set siteOptions = [] %}
+{% for site in sites %}
+    {% set siteOptions = siteOptions|merge([{ label: site.name ~ ' (' ~ site.language ~ ')', value: site.id }]) %}
+{% endfor %}
+
+{% set groupOptions = [] %}
+{% for id, name in groups %}
+    {% set groupOptions = groupOptions|merge([{ label: name, value: id }]) %}
+{% endfor %}
+
+{% block content %}
+    {% if not verified %}
+        <div class="pane" style="margin-bottom: 24px;">
+            <p class="error">
+                {% if not configured %}
+                    {{ "No API key is configured yet."|t('translator-pro') }}
+                {% else %}
+                    {{ "The connection to the AI provider isn’t working yet."|t('translator-pro') }}
+                {% endif %}
+                <a href="{{ url('translator-pro/settings') }}">{{ "Open settings"|t('translator-pro') }}</a>
+            </p>
+            {% if verificationError %}
+                <p class="error smalltext">{{ verificationError }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if lastRun %}
+        <div class="pane" style="margin-bottom: 24px;">
+            <h2>{{ "Last run"|t('translator-pro') }}</h2>
+            <p>
+                {{ "{elements} elements processed · {translated} values translated"|t('translator-pro', {
+                    elements: lastRun.elements ?? 0,
+                    translated: lastRun.translated ?? 0,
+                }) }}
+            </p>
+            <p class="light smalltext">
+                {{ "Skipped: {filled} already filled, {shared} not translatable per site, {empty} empty in the source."|t('translator-pro', {
+                    filled: lastRun.skippedFilled ?? 0,
+                    shared: lastRun.skippedShared ?? 0,
+                    empty: lastRun.skippedEmpty ?? 0,
+                }) }}
+            </p>
+            {% if lastRun.errors is defined and lastRun.errors|length %}
+                <ul class="errors">
+                    {% for error in lastRun.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <form method="post" accept-charset="UTF-8" id="tp-batch-form">
+        {{ csrfInput() }}
+        {{ actionInput('translator-pro/batch/run') }}
+        {{ redirectInput('translator-pro/ai') }}
+
+        {{ forms.selectField({
+            label: "What do you want to translate?"|t('translator-pro'),
+            id: 'elementType',
+            name: 'elementType',
+            options: elementTypeOptions,
+            value: elementType,
+        }) }}
+
+        {{ forms.selectField({
+            label: "Translate from"|t('translator-pro'),
+            instructions: "The site whose content is used as the source."|t('translator-pro'),
+            id: 'sourceSiteId',
+            name: 'sourceSiteId',
+            options: siteOptions,
+            value: sourceSiteId,
+        }) }}
+
+        {{ forms.checkboxSelectField({
+            label: "Translate into"|t('translator-pro'),
+            instructions: "The target language comes from each site’s own language setting."|t('translator-pro'),
+            name: 'targetSiteIds',
+            options: siteOptions,
+            values: [],
+        }) }}
+
+        {{ forms.checkboxSelectField({
+            label: "Sources"|t('translator-pro'),
+            instructions: "Sections, category groups or global sets to run over."|t('translator-pro'),
+            id: 'groupIds',
+            name: 'groupIds',
+            options: groupOptions,
+            values: groupIds,
+        }) }}
+
+        <div class="field" id="tp-fields-field">
+            <div class="heading">
+                <label>{{ "Fields"|t('translator-pro') }}</label>
+                <div class="instructions">
+                    <p>{{ "Pick the fields to translate. Fields inside Matrix blocks are listed under their block type."|t('translator-pro') }}</p>
+                </div>
+            </div>
+            <div class="input">
+                <div class="tp-field-list" id="tp-field-list">
+                    {% if fields is empty %}
+                        <p class="light">{{ "Select one or more sources to see their fields."|t('translator-pro') }}</p>
+                    {% else %}
+                        {% include 'translator-pro/_components/field-list' with { fields: fields } only %}
+                    {% endif %}
+                </div>
+                <div class="buttons">
+                    <button type="button" class="btn small" id="tp-select-all">{{ "Select all"|t('translator-pro') }}</button>
+                    <button type="button" class="btn small" id="tp-select-none">{{ "Select none"|t('translator-pro') }}</button>
+                </div>
+            </div>
+        </div>
+
+        {{ forms.lightswitchField({
+            label: "Overwrite existing translations"|t('translator-pro'),
+            instructions: "Off by default: fields that already have content in the target site are left alone."|t('translator-pro'),
+            name: 'overwrite',
+            on: false,
+        }) }}
+
+        <div class="buttons">
+            <button type="submit" class="btn submit"{% if not verified %} disabled{% endif %}>
+                {{ "Queue translation"|t('translator-pro') }}
+            </button>
+        </div>
+    </form>
+{% endblock %}
+
+{% js %}
+(function () {
+    var form = document.getElementById('tp-batch-form');
+    var list = document.getElementById('tp-field-list');
+
+    function selectedGroupIds() {
+        return Array.prototype.map.call(
+            form.querySelectorAll('input[name="groupIds[]"]:checked'),
+            function (input) { return input.value; }
+        );
+    }
+
+    // The available fields depend on which sections are picked, so the list is
+    // rebuilt whenever the selection changes rather than on page load only.
+    function refresh() {
+        var elementType = form.querySelector('#elementType').value;
+        var sourceSiteId = form.querySelector('#sourceSiteId').value;
+
+        Craft.sendActionRequest('POST', 'translator-pro/batch/options', {
+            data: {
+                elementType: elementType,
+                sourceSiteId: sourceSiteId,
+                groupIds: selectedGroupIds()
+            }
+        }).then(function (response) {
+            renderFields(response.data.fields || []);
+        }).catch(function () {
+            Craft.cp.displayError({{ "Couldn’t load fields."|t('translator-pro')|json_encode|raw }});
+        });
+    }
+
+    function renderFields(fields) {
+        if (!fields.length) {
+            list.innerHTML = '<p class="light">' + {{ "No translatable fields found for that selection."|t('translator-pro')|json_encode|raw }} + '</p>';
+            return;
+        }
+
+        list.innerHTML = '';
+
+        fields.forEach(function (field) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'checkbox-wrapper tp-depth-' + Math.min(field.depth, 3);
+
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.name = 'paths[]';
+            input.value = field.path;
+            input.id = 'tp-path-' + field.path.replace(/[^a-z0-9]/gi, '-');
+            input.className = 'checkbox';
+            input.checked = field.translatable;
+            input.disabled = !field.translatable;
+
+            var label = document.createElement('label');
+            label.setAttribute('for', input.id);
+            label.textContent = field.label;
+
+            if (!field.translatable) {
+                label.className = 'tp-shared';
+                label.textContent += ' — ' + {{ "not translatable per site"|t('translator-pro')|json_encode|raw }};
+            }
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(label);
+            list.appendChild(wrapper);
+        });
+    }
+
+    form.addEventListener('change', function (e) {
+        if (e.target.matches('#elementType, #sourceSiteId')) {
+            // Sections and groups differ per element type, so reload the page
+            // to get a fresh source list alongside the fields.
+            form.querySelectorAll('input[name="groupIds[]"]:checked').forEach(function (i) { i.checked = false; });
+            window.location = Craft.getCpUrl('translator-pro/ai', {
+                elementType: form.querySelector('#elementType').value,
+                sourceSiteId: form.querySelector('#sourceSiteId').value
+            });
+            return;
+        }
+
+        if (e.target.name === 'groupIds[]') {
+            refresh();
+        }
+    });
+
+    document.getElementById('tp-select-all').addEventListener('click', function () {
+        list.querySelectorAll('input[type="checkbox"]:not(:disabled)').forEach(function (i) { i.checked = true; });
+    });
+
+    document.getElementById('tp-select-none').addEventListener('click', function () {
+        list.querySelectorAll('input[type="checkbox"]').forEach(function (i) { i.checked = false; });
+    });
+})();
+{% endjs %}

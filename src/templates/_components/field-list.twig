@@ -1,0 +1,17 @@
+{% for field in fields %}
+    {% set inputId = 'tp-path-' ~ field.path|replace({'>': '-'})|kebab %}
+    <div class="checkbox-wrapper tp-depth-{{ min(field.depth, 3) }}">
+        <input
+            type="checkbox"
+            class="checkbox"
+            id="{{ inputId }}"
+            name="paths[]"
+            value="{{ field.path }}"
+            {% if field.translatable %}checked{% else %}disabled{% endif %}
+        >
+        <label for="{{ inputId }}"{% if not field.translatable %} class="tp-shared"{% endif %}>
+            {{ field.fullLabel }}
+            {%- if not field.translatable %} — {{ "not translatable per site"|t('translator-pro') }}{% endif %}
+        </label>
+    </div>
+{% endfor %}

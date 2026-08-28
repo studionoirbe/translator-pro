@@ -1,0 +1,472 @@
+/**
+ * Translator Pro — control panel styles.
+ *
+ * Everything is scoped to `.tp-*` and sized to sit inside Craft's own field
+ * headings without pushing anything around.
+ */
+
+.tp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 22px;
+    height: 22px;
+    padding-inline: 3px;
+    margin-inline-start: 6px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--ui-control-color, #596673);
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease;
+    vertical-align: middle;
+    flex: 0 0 auto;
+}
+
+.tp-btn:hover,
+.tp-btn:focus-visible {
+    opacity: 1;
+    background-color: var(--gray-100, #f3f7fc);
+    color: var(--link-color, #0b69a3);
+}
+
+.tp-btn:focus-visible {
+    outline: none;
+    border-color: var(--link-color, #0b69a3);
+    box-shadow: 0 0 0 1px var(--link-color, #0b69a3);
+}
+
+.tp-btn[disabled] {
+    cursor: default;
+    opacity: 0.4;
+}
+
+/* The language the field will be translated into, so pressing the button is
+   never a guess. */
+.tp-btn-lang {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.tp-page-lang {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background-color: var(--gray-200, #e3e9f0);
+    white-space: nowrap;
+}
+
+/* The field is being translated. */
+.tp-btn.tp-busy svg {
+    animation: tp-spin 0.9s linear infinite;
+}
+
+@keyframes tp-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fallback button for inputs that aren't wrapped in a Craft field. */
+.tp-btn--floating {
+    position: absolute;
+    z-index: 100;
+    background-color: var(--white, #fff);
+    border-color: var(--hairline-color, rgba(51, 64, 77, 0.1));
+    box-shadow: 0 1px 3px rgba(31, 41, 51, 0.15);
+    opacity: 0.9;
+}
+
+.tp-btn--floating[hidden] {
+    display: none;
+}
+
+/* Page-level button, sat next to Save. */
+.tp-page {
+    display: inline-flex;
+    align-items: stretch;
+    /* A real gap, not Craft's `btn-group` fusion: these are two separate
+       actions — translate now, and choose what to translate from. */
+    gap: 5px;
+    margin-inline-end: 7px;
+    position: relative;
+}
+
+.tp-page-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tp-page-btn.tp-busy svg {
+    animation: tp-spin 0.9s linear infinite;
+}
+
+.tp-page-caret {
+    padding-inline: 9px;
+}
+
+.tp-page-caret::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border: 4px solid transparent;
+    border-top-color: currentColor;
+    margin-top: 2px;
+}
+
+.tp-menu {
+    /* Fixed and parented to <body>: the control panel header is its own
+       stacking context, so an absolutely positioned menu inside it ends up
+       behind the page content whatever its z-index. Placed by positionMenu(). */
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Above Craft's fixed header (12) and its own menus (100/101), below its
+       tooltips (1000000). */
+    z-index: 1001;
+    min-width: 232px;
+    max-width: 340px;
+    padding: 6px 0;
+    background: var(--white, #fff);
+    border-radius: var(--large-border-radius, 5px);
+    box-shadow:
+        0 0 0 1px var(--hairline-color, rgba(51, 64, 77, 0.1)),
+        0 4px 16px rgba(31, 41, 51, 0.14);
+    /* Long site names shouldn't push a scrollbar onto the panel. */
+    overflow: hidden;
+}
+
+.tp-menu[hidden] {
+    display: none;
+}
+
+/* The fixed target, stated rather than offered as a choice. */
+.tp-menu-target {
+    padding: 6px 14px 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--hairline-color, rgba(51, 64, 77, 0.1));
+    color: var(--text-color, #3f4d5a);
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.tp-menu h6 {
+    margin: 0;
+    padding: 2px 14px 4px;
+    color: var(--medium-text-color, #606d7b);
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.tp-menu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tp-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+.tp-menu a {
+    display: block;
+    padding: 5px 14px;
+    color: var(--text-color, #3f4d5a);
+    text-decoration: none;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tp-menu a:hover {
+    background-color: var(--gray-100, #f3f7fc);
+    text-decoration: none;
+}
+
+.tp-menu a.sel {
+    font-weight: 600;
+    color: var(--link-color, #0b69a3);
+}
+
+.tp-menu-empty {
+    padding: 5px 14px;
+    color: var(--medium-text-color, #606d7b);
+}
+
+/* A field that just received a translation. */
+.tp-flash {
+    animation: tp-flash 0.9s ease-out;
+}
+
+@keyframes tp-flash {
+    0% {
+        background-color: rgba(11, 105, 163, 0.14);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tp-flash,
+    .tp-btn.tp-busy svg,
+    .tp-page-btn.tp-busy svg {
+        animation: none;
+    }
+}
+
+/* Static translations table — dense on purpose: these screens are long, and
+   scanning hundreds of strings is easier when rows sit close together. */
+.tp-table td {
+    vertical-align: top;
+}
+
+.tp-table th {
+    text-align: start;
+}
+
+.tp-table.tp-compact td,
+.tp-table.tp-compact th {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    line-height: 1.35;
+}
+
+/* Fixed layout so the two content columns split the row evenly, whatever the
+   longest string happens to be. The status column is subtracted from both
+   halves rather than eating into the translation side. */
+.tp-table.tp-compact {
+    table-layout: fixed;
+}
+
+/* Two equal columns. Declared on both <col> and <th>: with table-layout:fixed
+   the widths are taken from the first row, and browsers disagree about whether
+   a <col> alone is enough. */
+.tp-col-source,
+.tp-col-translation {
+    width: 50%;
+}
+
+.tp-source-string {
+    /* pre-wrap belongs on the <code>, not here: on the cell it would also
+       render the template's own indentation as a wide left margin. */
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-align: start;
+}
+
+.tp-source-string code {
+    display: inline;
+    font-size: 12px;
+    /* Source strings can carry meaningful leading or trailing spaces, so keep
+       the string's own whitespace while wrapping long lines. */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* A string whose leading/trailing space is significant — outline it so the
+   space is visible instead of looking like a rendering glitch. */
+.tp-source-string code.tp-whitespace {
+    outline: 1px dashed var(--hairline-color, rgba(51, 64, 77, 0.25));
+    outline-offset: 1px;
+}
+
+.tp-source-string .smalltext {
+    margin-top: 1px;
+}
+
+.tp-translation-row .tp-translation-input {
+    flex: 1 1 auto;
+}
+
+.tp-translation-input {
+    /* No `field-sizing: content` here — it collapses an empty textarea to its
+       default ~20 columns instead of filling the cell. */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    height: 30px;
+    max-height: 160px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    line-height: 1.35;
+    resize: vertical;
+}
+
+/* Value inherited from the source's own language file rather than a project
+   override — shown, but visibly not "yours" yet. */
+.tp-translation-input.tp-inherited {
+    color: var(--medium-text-color, #606d7b);
+    font-style: italic;
+}
+
+.tp-translation-input.tp-inherited:focus {
+    color: var(--text-color, #3f4d5a);
+    font-style: normal;
+}
+
+/* Status marker sits to the left of the input, in a fixed-width gutter so
+   every textarea in the column starts at the same x. */
+.tp-translation-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.tp-row-status {
+    flex: 0 0 52px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 30px;
+    white-space: nowrap;
+}
+
+.tp-badge {
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 5px;
+    border-radius: 3px;
+    background-color: var(--gray-100, #f3f7fc);
+    color: var(--medium-text-color, #606d7b);
+}
+
+.tp-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    align-items: end;
+    margin-bottom: 18px;
+}
+
+/* Craft gives .field a top margin, which would push each control down by a
+   different amount and leave the labels on different lines. */
+.tp-toolbar .field {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.tp-toolbar .field > .heading {
+    margin-bottom: 4px;
+}
+
+.tp-toolbar .field > .heading label {
+    white-space: nowrap;
+}
+
+.tp-toolbar .flex-grow {
+    flex: 1 1 auto;
+}
+
+.tp-search-field {
+    flex: 1 1 240px;
+    min-width: 180px;
+    max-width: 460px;
+}
+
+.tp-search-input {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.tp-search-input .text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.tp-search-input .btn {
+    flex: 0 0 auto;
+}
+
+/* Save and pagination share one bar, above and below the table. */
+.tp-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.tp-pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+}
+
+.tp-pagination .btn.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.tp-field-list {
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 10px 14px;
+    border: 1px solid var(--hairline-color, rgba(51, 64, 77, 0.1));
+    border-radius: var(--large-border-radius, 5px);
+}
+
+.tp-field-list .tp-depth-1 {
+    padding-inline-start: 20px;
+}
+
+.tp-field-list .tp-depth-2 {
+    padding-inline-start: 40px;
+}
+
+.tp-field-list .tp-depth-3 {
+    padding-inline-start: 60px;
+}
+
+.tp-shared {
+    color: var(--medium-text-color, #606d7b);
+}
+
+
+/* Formie form builder — the Translator Pro tab. */
+.tp-formie-pane {
+    max-width: 760px;
+}
+
+.tp-formie-pane h2 {
+    margin-bottom: 6px;
+}
+
+.tp-formie-pane h3 {
+    margin: 0 0 10px;
+}
+
+.tp-formie-block {
+    margin-bottom: 18px;
+}
+
+.tp-formie-pane hr {
+    margin: 24px 0;
+}
+
+.tp-formie-pane .warning {
+    margin-top: 10px;
+    color: var(--warning-color, #cf1124);
+}
+
+.tp-formie-pane .tp-table {
+    margin-top: 10px;
+}

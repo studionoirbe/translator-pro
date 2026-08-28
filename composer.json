@@ -1,0 +1,68 @@
+{
+    "name": "studionoir/translator-pro",
+    "description": "Static template & plugin translations, plus AI-powered field and batch translations for Craft CMS",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "keywords": [
+        "craftcms",
+        "craft-plugin",
+        "translation",
+        "translations",
+        "localization",
+        "multi-site",
+        "i18n",
+        "deepl",
+        "openai",
+        "anthropic",
+        "formie"
+    ],
+    "authors": [
+        {
+            "name": "Studio Noir",
+            "homepage": "https://studionoir.be"
+        }
+    ],
+    "support": {
+        "email": "info@studionoir.be",
+        "issues": "https://github.com/studionoirbe/translator-pro/issues",
+        "source": "https://github.com/studionoirbe/translator-pro",
+        "docs": "https://github.com/studionoirbe/translator-pro#readme"
+    },
+    "require": {
+        "php": ">=8.2",
+        "craftcms/cms": "^5.0.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "studionoir\\translatorpro\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "translator-pro",
+        "name": "Translator Pro",
+        "developer": "Studio Noir",
+        "developerUrl": "https://studionoir.be",
+        "documentationUrl": "https://github.com/studionoirbe/translator-pro#readme",
+        "changelogUrl": "https://raw.githubusercontent.com/studionoirbe/translator-pro/main/CHANGELOG.md",
+        "class": "studionoir\\translatorpro\\TranslatorPro"
+    },
+    "scripts": {
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2.0"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}

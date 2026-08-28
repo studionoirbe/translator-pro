@@ -1,0 +1,268 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms.twig" as forms %}
+
+{% set selectedSubnavItem = 'settings' %}
+{% set title = "Settings"|t('translator-pro') %}
+
+{% block content %}
+    <form method="post" accept-charset="UTF-8" id="tp-settings-form">
+        {{ csrfInput() }}
+        {{ actionInput('translator-pro/settings/save') }}
+        {{ redirectInput('translator-pro/settings') }}
+
+        <div class="pane" style="margin-bottom: 24px;">
+            <h2>{{ "Edition"|t('translator-pro') }}</h2>
+            {% if isPro %}
+                <p><span class="success">{{ "Pro"|t('translator-pro') }}</span> — {{ "AI translations are enabled."|t('translator-pro') }}</p>
+            {% else %}
+                <p>
+                    <span class="light">{{ "Lite"|t('translator-pro') }}</span> —
+                    {{ "Static translations only. Upgrade to Pro for AI translations, per-field translate buttons and batch runs."|t('translator-pro') }}
+                </p>
+                <p class="light smalltext">
+                    {{ "Locally you can switch editions with:"|t('translator-pro') }}
+                    <code>php craft translator-pro/license/set-edition pro</code>
+                </p>
+            {% endif %}
+        </div>
+
+        <h2>{{ "AI provider"|t('translator-pro') }}</h2>
+
+        {% if isPro %}
+            <div class="pane" style="margin-bottom: 20px;">
+                {% if verified %}
+                    <p>
+                        <span class="success">{{ "Connection verified"|t('translator-pro') }}</span> —
+                        {{ "the translate buttons are active throughout the control panel."|t('translator-pro') }}
+                    </p>
+                {% else %}
+                    <p>
+                        <span class="error">{{ "Not connected"|t('translator-pro') }}</span> —
+                        {{ "the translate buttons stay hidden until a request to the provider succeeds."|t('translator-pro') }}
+                    </p>
+                    {% if verificationError %}
+                        <p class="error smalltext">{{ verificationError }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {{ forms.selectField({
+            label: "Provider"|t('translator-pro'),
+            id: 'provider',
+            name: 'settings[provider]',
+            options: providerOptions,
+            value: settings.provider,
+            errors: settings.getErrors('provider'),
+            disabled: 'provider' in overrides|keys,
+        }) }}
+
+        {{ forms.autosuggestField({
+            label: "API key"|t('translator-pro'),
+            instructions: "Stored in project config, so use an environment variable in anything you commit."|t('translator-pro'),
+            id: 'apiKey',
+            name: 'settings[apiKey]',
+            value: settings.apiKey,
+            suggestEnvVars: true,
+            errors: settings.getErrors('apiKey'),
+            disabled: 'apiKey' in overrides|keys,
+        }) }}
+
+        {{ forms.textField({
+            label: "Model"|t('translator-pro'),
+            instructions: "Only used by the LLM providers. Leave blank for the provider’s default."|t('translator-pro'),
+            id: 'model',
+            name: 'settings[model]',
+            value: settings.model,
+            placeholder: 'gpt-4o-mini / claude-sonnet-5 / gemini-2.0-flash',
+            errors: settings.getErrors('model'),
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: "Use the DeepL free API"|t('translator-pro'),
+            instructions: "Only needed if your key doesn’t end in :fx — those are detected automatically."|t('translator-pro'),
+            name: 'settings[deeplFreeApi]',
+            on: settings.deeplFreeApi,
+        }) }}
+
+        {{ forms.textareaField({
+            label: "Prompt context"|t('translator-pro'),
+            instructions: "Extra guidance for the LLM providers — tone of voice, terms to leave untranslated, formality."|t('translator-pro'),
+            name: 'settings[promptContext]',
+            value: settings.promptContext,
+            rows: 4,
+        }) }}
+
+        <div class="field">
+            <div class="input">
+                <button type="button" class="btn" id="tp-test">{{ "Test connection"|t('translator-pro') }}</button>
+                <span id="tp-test-result" class="light" style="margin-inline-start: 8px;"></span>
+            </div>
+        </div>
+
+        {% if usage %}
+            <p class="light">
+                {{ "DeepL usage: {used} characters"|t('translator-pro', { used: usage.used|number_format }) }}
+                {%- if usage.limit %} / {{ usage.limit|number_format }}{% endif %}
+            </p>
+        {% endif %}
+
+        <hr>
+
+        <h2>{{ "Control panel buttons"|t('translator-pro') }}</h2>
+
+        {{ forms.lightswitchField({
+            label: "Show a translate button on each field"|t('translator-pro'),
+            name: 'settings[enableFieldButtons]',
+            on: settings.enableFieldButtons,
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: "Show a “Translate page” button next to Save"|t('translator-pro'),
+            name: 'settings[enablePageButton]',
+            on: settings.enablePageButton,
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: "Overwrite fields that already have content"|t('translator-pro'),
+            instructions: "Applies to batch runs. The per-field button always replaces what you point it at."|t('translator-pro'),
+            name: 'settings[overwriteExisting]',
+            on: settings.overwriteExisting,
+        }) }}
+
+        {{ forms.editableTableField({
+            label: "Never show any translate button on"|t('translator-pro'),
+            instructions: "Control panel paths that get no translate buttons at all, without the /admin prefix. A path also covers everything below it, so “settings” covers creating a field."|t('translator-pro'),
+            id: 'fieldButtonExcludedPaths',
+            name: 'settings[fieldButtonExcludedPaths]',
+            cols: {
+                value: { heading: "Path"|t('translator-pro'), type: 'singleline' },
+            },
+            rows: settings.fieldButtonExcludedPaths|map(p => { value: p }),
+            addRowLabel: "Add a path"|t('translator-pro'),
+            allowAdd: true,
+            allowDelete: true,
+            allowReorder: true,
+        }) }}
+
+        {{ forms.editableTableField({
+            label: "Show the page button on"|t('translator-pro'),
+            instructions: "Control panel paths where the “Translate page” button may appear, without the /admin prefix. A * matches one segment, and a path also covers everything below it. Per-field buttons are unaffected."|t('translator-pro'),
+            id: 'pageButtonPaths',
+            name: 'settings[pageButtonPaths]',
+            cols: {
+                value: { heading: "Path"|t('translator-pro'), type: 'singleline' },
+            },
+            rows: settings.pageButtonPaths|map(p => { value: p }),
+            addRowLabel: "Add a path"|t('translator-pro'),
+            allowAdd: true,
+            allowDelete: true,
+            allowReorder: true,
+        }) }}
+
+        {{ forms.editableTableField({
+            label: "Never translate fields matching"|t('translator-pro'),
+            instructions: "Inputs whose name or id contains one of these fragments are left alone."|t('translator-pro'),
+            id: 'excludedFieldPatterns',
+            name: 'settings[excludedFieldPatterns]',
+            cols: {
+                value: { heading: "Fragment"|t('translator-pro'), type: 'singleline' },
+            },
+            rows: settings.excludedFieldPatterns|map(p => { value: p }),
+            addRowLabel: "Add a fragment"|t('translator-pro'),
+            allowAdd: true,
+            allowDelete: true,
+            allowReorder: true,
+        }) }}
+
+        <hr>
+
+        <h2>{{ "Batch translations"|t('translator-pro') }}</h2>
+
+        {{ forms.textField({
+            label: "Strings per request"|t('translator-pro'),
+            instructions: "How many strings are sent to the provider at once."|t('translator-pro'),
+            name: 'settings[batchSize]',
+            value: settings.batchSize,
+            size: 5,
+            type: 'number',
+            errors: settings.getErrors('batchSize'),
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: "Create a revision before translating"|t('translator-pro'),
+            instructions: "Lets an editor roll back a batch run from the element’s revision menu."|t('translator-pro'),
+            name: 'settings[createRevisions]',
+            on: settings.createRevisions,
+        }) }}
+
+        <hr>
+
+        <h2>{{ "Template scanning"|t('translator-pro') }}</h2>
+
+        {{ forms.editableTableField({
+            label: "Extra directories to scan"|t('translator-pro'),
+            instructions: "Craft aliases are allowed, e.g. @root/somewhere."|t('translator-pro'),
+            id: 'extraScanPaths',
+            name: 'settings[extraScanPaths]',
+            cols: {
+                value: { heading: "Path"|t('translator-pro'), type: 'singleline' },
+            },
+            rows: settings.extraScanPaths|map(p => { value: p }),
+            addRowLabel: "Add a directory"|t('translator-pro'),
+            allowAdd: true,
+            allowDelete: true,
+            allowReorder: true,
+        }) }}
+
+        {{ forms.editableTableField({
+            label: "File extensions"|t('translator-pro'),
+            id: 'scanExtensions',
+            name: 'settings[scanExtensions]',
+            cols: {
+                value: { heading: "Extension"|t('translator-pro'), type: 'singleline' },
+            },
+            rows: settings.scanExtensions|map(e => { value: e }),
+            addRowLabel: "Add an extension"|t('translator-pro'),
+            allowAdd: true,
+            allowDelete: true,
+            allowReorder: true,
+        }) }}
+
+        <div class="buttons">
+            <button type="submit" class="btn submit">{{ "Save"|t('translator-pro') }}</button>
+        </div>
+    </form>
+{% endblock %}
+
+{% js %}
+document.getElementById('tp-test').addEventListener('click', function () {
+    var button = this;
+    var result = document.getElementById('tp-test-result');
+    var form = document.getElementById('tp-settings-form');
+
+    button.disabled = true;
+    result.textContent = {{ "Testing…"|t('translator-pro')|json_encode|raw }};
+    result.className = 'light';
+
+    Craft.sendActionRequest('POST', 'translator-pro/settings/test-connection', {
+        data: {
+            settings: {
+                provider: form.querySelector('[name="settings[provider]"]').value,
+                apiKey: form.querySelector('[name="settings[apiKey]"]').value,
+                model: form.querySelector('[name="settings[model]"]').value,
+                deeplFreeApi: form.querySelector('[name="settings[deeplFreeApi]"]').value
+            }
+        }
+    }).then(function (response) {
+        result.textContent = response.data.message;
+        result.className = 'success';
+    }).catch(function (error) {
+        result.textContent = (error.response && error.response.data && error.response.data.message)
+            || {{ "Connection failed."|t('translator-pro')|json_encode|raw }};
+        result.className = 'error';
+    }).then(function () {
+        button.disabled = false;
+    });
+});
+{% endjs %}
