@@ -243,14 +243,14 @@ class StaticController extends BaseController
 
     /**
      * Fills in every missing translation for a source + locale using the
-     * configured AI provider. Pro only.
+     * configured AI provider. Plus only.
      */
     public function actionTranslateMissing(): ?Response
     {
         $this->requirePostRequest();
 
         if (!TranslatorPro::$plugin->canUseAi()) {
-            $this->setFailFlash(Craft::t('translator-pro', 'AI translations require the Pro edition.'));
+            $this->setFailFlash(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
             return null;
         }
 

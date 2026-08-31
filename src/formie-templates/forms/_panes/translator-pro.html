@@ -7,7 +7,7 @@
 {% set languages = plugin.translations.getTargetLocaleOptions() %}
 {% set targetLanguage = bridge.getTargetLanguage(formId) %}
 {% set sourceLanguage = bridge.getSourceLanguage(formId) %}
-{% set isPro = plugin.isPro() %}
+{% set isPlus = plugin.isPlus() %}
 {% set ready = plugin.aiIsReady() %}
 
 {# Detection first: the form's text is right there, so the provider can work
@@ -60,8 +60,8 @@
     <div class="tp-formie-block">
         <h3>{{ "Translate this form"|t('translator-pro') }}</h3>
 
-        {% if not isPro %}
-            <p class="error">{{ "AI translations require the Pro edition."|t('translator-pro') }}</p>
+        {% if not isPlus %}
+            <p class="error">{{ "AI translations require the Plus edition."|t('translator-pro') }}</p>
         {% elseif not ready %}
             <p class="error">
                 {{ "The AI provider connection isn’t working yet."|t('translator-pro') }}

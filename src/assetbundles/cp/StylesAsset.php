@@ -10,7 +10,7 @@ use craft\web\assets\cp\CpAsset;
  *
  * Kept separate from {@see FieldTranslateAsset} because that one only loads once
  * an AI connection is verified — the static translation screens need their
- * styling regardless of whether anyone has bought the Pro edition.
+ * styling regardless of whether anyone has bought the Plus edition.
  */
 class StylesAsset extends AssetBundle
 {

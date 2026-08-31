@@ -34,7 +34,7 @@ use yii\base\Event;
  *  - Formie translation overrides
  *  - Override the language files of any installed plugin
  *
- * Pro edition
+ * Plus edition
  *  - AI translations through DeepL / OpenAI / Anthropic / Google
  *  - A translate button on every input field in the control panel
  *  - A "Translate page" button next to Save
@@ -56,7 +56,7 @@ use yii\base\Event;
 class TranslatorPro extends Plugin
 {
     public const EDITION_LITE = 'lite';
-    public const EDITION_PRO = 'pro';
+    public const EDITION_PLUS = 'plus';
 
     public const PERMISSION_STATIC = 'translatorPro:manageStaticTranslations';
     public const PERMISSION_AI = 'translatorPro:useAiTranslations';
@@ -74,7 +74,7 @@ class TranslatorPro extends Plugin
     {
         return [
             self::EDITION_LITE,
-            self::EDITION_PRO,
+            self::EDITION_PLUS,
         ];
     }
 
@@ -116,9 +116,9 @@ class TranslatorPro extends Plugin
     /**
      * Whether the Pro (AI) features are available.
      */
-    public function isPro(): bool
+    public function isPlus(): bool
     {
-        return $this->is(self::EDITION_PRO);
+        return $this->is(self::EDITION_PLUS);
     }
 
     /**
@@ -126,7 +126,7 @@ class TranslatorPro extends Plugin
      */
     public function canUseAi(): bool
     {
-        if (!$this->isPro()) {
+        if (!$this->isPlus()) {
             return false;
         }
 
@@ -249,12 +249,12 @@ class TranslatorPro extends Plugin
                     return;
                 }
 
-                // The tab is Pro-only: the language it sets exists purely to
+                // The tab is Plus-only: the language it sets exists purely to
                 // tell the AI what to translate into, and the translate button
-                // below it is Pro too. On Lite the whole tab would be inert.
+                // below it is Plus too. On Lite the whole tab would be inert.
                 // Gated on the edition rather than on aiIsReady(), so a key that
                 // has momentarily stopped verifying doesn't hide the setting.
-                if (!$this->isPro()) {
+                if (!$this->isPlus()) {
                     return;
                 }
 
@@ -396,9 +396,9 @@ class TranslatorPro extends Plugin
     private function renderSourceToggle(?string $uid, bool $on, string $instructions, string $anchor): void
     {
         // Everything this switch governs — the field buttons, the page button,
-        // AI translations — is Pro only, so on Lite it would be a control that
+        // AI translations — is Plus only, so on Lite it would be a control that
         // does nothing.
-        if (!$this->isPro()) {
+        if (!$this->isPlus()) {
             return;
         }
 
@@ -491,7 +491,7 @@ JS;
     {
         // Matches renderSourceToggle(): if Lite never drew the field, a posted
         // value didn't come from us and must not rewrite the setting.
-        if (!$this->isPro() || !Craft::$app instanceof WebApplication) {
+        if (!$this->isPlus() || !Craft::$app instanceof WebApplication) {
             return;
         }
 

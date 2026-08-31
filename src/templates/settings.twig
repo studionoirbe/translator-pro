@@ -12,23 +12,23 @@
 
         <div class="pane" style="margin-bottom: 24px;">
             <h2>{{ "Edition"|t('translator-pro') }}</h2>
-            {% if isPro %}
-                <p><span class="success">{{ "Pro"|t('translator-pro') }}</span> — {{ "AI translations are enabled."|t('translator-pro') }}</p>
+            {% if isPlus %}
+                <p><span class="success">{{ "Plus"|t('translator-pro') }}</span> — {{ "AI translations are enabled."|t('translator-pro') }}</p>
             {% else %}
                 <p>
                     <span class="light">{{ "Lite"|t('translator-pro') }}</span> —
-                    {{ "Static translations only. Upgrade to Pro for AI translations, per-field translate buttons and batch runs."|t('translator-pro') }}
+                    {{ "Static translations only. Upgrade to Plus for AI translations, per-field translate buttons and batch runs."|t('translator-pro') }}
                 </p>
                 <p class="light smalltext">
                     {{ "Locally you can switch editions with:"|t('translator-pro') }}
-                    <code>php craft translator-pro/license/set-edition pro</code>
+                    <code>php craft translator-pro/license/set-edition plus</code>
                 </p>
             {% endif %}
         </div>
 
         <h2>{{ "AI provider"|t('translator-pro') }}</h2>
 
-        {% if isPro %}
+        {% if isPlus %}
             <div class="pane" style="margin-bottom: 20px;">
                 {% if verified %}
                     <p>

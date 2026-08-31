@@ -34,8 +34,8 @@ class AiController extends Controller
         $this->requireCpRequest();
         $this->requireAcceptsJson();
 
-        if (!TranslatorPro::$plugin->isPro()) {
-            throw new ForbiddenHttpException(Craft::t('translator-pro', 'AI translations require the Pro edition.'));
+        if (!TranslatorPro::$plugin->isPlus()) {
+            throw new ForbiddenHttpException(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
         }
 
         $this->requirePermission(TranslatorPro::PERMISSION_AI);

@@ -42,7 +42,7 @@ class SettingsController extends BaseController
             'plugin' => $plugin,
             'settings' => $settings,
             'providerOptions' => Settings::providerOptions(),
-            'isPro' => $plugin->isPro(),
+            'isPlus' => $plugin->isPlus(),
             'usage' => $usage,
             'verified' => $verified,
             'verificationError' => $plugin->translator->getVerificationError(),
@@ -71,7 +71,7 @@ class SettingsController extends BaseController
         // ones is meaningless — then prove the new ones actually work.
         $plugin->translator->forgetVerification();
 
-        if ($plugin->isPro() && $plugin->getSettings()->isConfigured() && !$plugin->translator->verify(true)) {
+        if ($plugin->isPlus() && $plugin->getSettings()->isConfigured() && !$plugin->translator->verify(true)) {
             $this->setFailFlash(Craft::t(
                 'translator-pro',
                 'Settings saved, but the connection test failed: {message} The translate buttons stay hidden until it succeeds.',
@@ -97,8 +97,8 @@ class SettingsController extends BaseController
 
         $plugin = TranslatorPro::$plugin;
 
-        if (!$plugin->isPro()) {
-            return $this->asFailure(Craft::t('translator-pro', 'AI translations require the Pro edition.'));
+        if (!$plugin->isPlus()) {
+            return $this->asFailure(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
         }
 
         // Test what's in the form, not what was last saved.

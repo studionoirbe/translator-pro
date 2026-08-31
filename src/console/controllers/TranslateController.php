@@ -94,8 +94,8 @@ class TranslateController extends Controller
      */
     public function actionElements(): int
     {
-        if (!TranslatorPro::$plugin->isPro()) {
-            $this->stderr('AI translations require the Pro edition.' . PHP_EOL, Console::FG_RED);
+        if (!TranslatorPro::$plugin->isPlus()) {
+            $this->stderr('AI translations require the Plus edition.' . PHP_EOL, Console::FG_RED);
 
             return ExitCode::UNAVAILABLE;
         }

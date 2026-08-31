@@ -46,7 +46,7 @@ class Translator extends Component
             return $this->provider;
         }
 
-        $this->requirePro();
+        $this->requirePlus();
 
         $settings = TranslatorPro::$plugin->getSettings();
         $class = self::PROVIDERS[$settings->provider] ?? null;
@@ -168,7 +168,7 @@ class Translator extends Component
     {
         $settings = TranslatorPro::$plugin->getSettings();
 
-        if (!TranslatorPro::$plugin->isPro() || !$settings->isConfigured()) {
+        if (!TranslatorPro::$plugin->isPlus() || !$settings->isConfigured()) {
             return false;
         }
 
@@ -196,7 +196,7 @@ class Translator extends Component
     {
         $settings ??= TranslatorPro::$plugin->getSettings();
 
-        if (!TranslatorPro::$plugin->isPro() || !$settings->isConfigured()) {
+        if (!TranslatorPro::$plugin->isPlus() || !$settings->isConfigured()) {
             return false;
         }
 
@@ -275,12 +275,12 @@ class Translator extends Component
     /**
      * @throws TranslatorException
      */
-    private function requirePro(): void
+    private function requirePlus(): void
     {
-        if (!TranslatorPro::$plugin->isPro()) {
+        if (!TranslatorPro::$plugin->isPlus()) {
             throw new TranslatorException(Craft::t(
                 'translator-pro',
-                'AI translations require the Pro edition of Translator Pro.',
+                'AI translations require the Plus edition of Translator Pro.',
             ));
         }
     }

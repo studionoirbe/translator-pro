@@ -72,8 +72,8 @@ class FormieController extends BaseController
 
         $this->requireFormPermission($formId);
 
-        if (!$plugin->isPro()) {
-            $this->setFailFlash(Craft::t('translator-pro', 'AI translations require the Pro edition.'));
+        if (!$plugin->isPlus()) {
+            $this->setFailFlash(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
 
             return null;
         }

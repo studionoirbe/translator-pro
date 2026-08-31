@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/icon.svg" width="72" height="72" alt="">
+  <img src="src/logo.svg" width="96" height="96" alt="Translator Pro">
 </p>
 
 <h1 align="center">Translator Pro</h1>
@@ -34,7 +34,7 @@ pressing Save.
 | Craft CMS | 5.0 or later |
 | PHP | 8.2 or later |
 | Optional | [Formie](https://verbb.io/craft-plugins/formie) 3.x for the Formie integration |
-| Pro only | A DeepL, OpenAI, Anthropic or Google Gemini API key |
+| Plus only | A DeepL, OpenAI, Anthropic or Google Gemini API key |
 
 ## Installation
 
@@ -52,13 +52,13 @@ Or install it from the Plugin Store in the control panel.
 
 ## Editions
 
-**Lite** is free and covers static translations. **Pro** adds everything AI.
+**Lite** is free and covers static translations. **Plus** adds everything AI.
 
-Pro is normally activated through the Plugin Store. On a local or path-repository
+Plus is normally activated through the Plugin Store. On a local or path-repository
 install you can switch editions from the command line:
 
 ```bash
-php craft translator-pro/license/set-edition pro
+php craft translator-pro/license/set-edition plus
 ```
 
 ---
@@ -108,7 +108,7 @@ You can also add strings that don't exist yet, for copy you're about to write.
 
 ---
 
-## Pro
+## Plus
 
 ### AI providers
 
