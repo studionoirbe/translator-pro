@@ -1,12 +1,12 @@
 <?php
 
-namespace studionoir\translatorpro\controllers;
+namespace studionoir\translingua\controllers;
 
 use Craft;
-use studionoir\translatorpro\models\Settings;
-use studionoir\translatorpro\translators\DeepL;
-use studionoir\translatorpro\translators\TranslatorException;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\Settings;
+use studionoir\translingua\translators\DeepL;
+use studionoir\translingua\translators\TranslatorException;
+use studionoir\translingua\Translingua;
 use yii\web\Response;
 
 class SettingsController extends BaseController
@@ -24,7 +24,7 @@ class SettingsController extends BaseController
 
     public function actionIndex(): Response
     {
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
         $settings = $plugin->getSettings();
 
         // Admin screens are the right place to spend a live check: this
@@ -37,8 +37,8 @@ class SettingsController extends BaseController
             $usage = (new DeepL($settings))->getUsage();
         }
 
-        return $this->renderTemplate('translator-pro/settings', [
-            'title' => Craft::t('translator-pro', 'Settings'),
+        return $this->renderTemplate('translingua/settings', [
+            'title' => Craft::t('translingua', 'Settings'),
             'plugin' => $plugin,
             'settings' => $settings,
             'providerOptions' => Settings::providerOptions(),
@@ -46,7 +46,7 @@ class SettingsController extends BaseController
             'usage' => $usage,
             'verified' => $verified,
             'verificationError' => $plugin->translator->getVerificationError(),
-            'overrides' => Craft::$app->getConfig()->getConfigFromFile('translator-pro'),
+            'overrides' => Craft::$app->getConfig()->getConfigFromFile('translingua'),
         ]);
     }
 
@@ -54,11 +54,11 @@ class SettingsController extends BaseController
     {
         $this->requirePostRequest();
 
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
         $settings = Craft::$app->getRequest()->getBodyParam('settings', []);
 
         if (!Craft::$app->getPlugins()->savePluginSettings($plugin, $settings)) {
-            $this->setFailFlash(Craft::t('translator-pro', 'Couldn’t save settings.'));
+            $this->setFailFlash(Craft::t('translingua', 'Couldn’t save settings.'));
 
             Craft::$app->getUrlManager()->setRouteParams([
                 'settings' => $plugin->getSettings(),
@@ -73,7 +73,7 @@ class SettingsController extends BaseController
 
         if ($plugin->isPlus() && $plugin->getSettings()->isConfigured() && !$plugin->translator->verify(true)) {
             $this->setFailFlash(Craft::t(
-                'translator-pro',
+                'translingua',
                 'Settings saved, but the connection test failed: {message} The translate buttons stay hidden until it succeeds.',
                 ['message' => $plugin->translator->getVerificationError() ?? ''],
             ));
@@ -81,7 +81,7 @@ class SettingsController extends BaseController
             return $this->redirectToPostedUrl();
         }
 
-        $this->setSuccessFlash(Craft::t('translator-pro', 'Settings saved.'));
+        $this->setSuccessFlash(Craft::t('translingua', 'Settings saved.'));
 
         return $this->redirectToPostedUrl();
     }
@@ -95,10 +95,10 @@ class SettingsController extends BaseController
         $this->requirePostRequest();
         $this->requireAcceptsJson();
 
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
 
         if (!$plugin->isPlus()) {
-            return $this->asFailure(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
+            return $this->asFailure(Craft::t('translingua', 'AI translations require the Plus edition.'));
         }
 
         // Test what's in the form, not what was last saved.
@@ -107,7 +107,7 @@ class SettingsController extends BaseController
         $settings->setAttributes(array_merge($plugin->getSettings()->toArray(), $posted), false);
 
         if (!$settings->isConfigured()) {
-            return $this->asFailure(Craft::t('translator-pro', 'Enter an API key first.'));
+            return $this->asFailure(Craft::t('translingua', 'Enter an API key first.'));
         }
 
         try {
@@ -125,7 +125,7 @@ class SettingsController extends BaseController
         // what's saved, the translate buttons light up without a second check.
         $plugin->translator->verify(true, $settings);
 
-        return $this->asSuccess(Craft::t('translator-pro', 'Connected to {provider}.', [
+        return $this->asSuccess(Craft::t('translingua', 'Connected to {provider}.', [
             'provider' => $translator->getName(),
         ]));
     }

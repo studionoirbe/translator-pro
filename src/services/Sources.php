@@ -1,12 +1,12 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
 use craft\base\PluginInterface;
-use studionoir\translatorpro\models\TranslationSource;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\TranslationSource;
+use studionoir\translingua\Translingua;
 
 /**
  * Discovers every pool of static translations that can be edited.
@@ -36,7 +36,7 @@ class Sources extends Component
 
         $sources['site'] = new TranslationSource([
             'category' => 'site',
-            'name' => Craft::t('translator-pro', 'Templates'),
+            'name' => Craft::t('translingua', 'Templates'),
             'type' => TranslationSource::TYPE_SITE,
             'basePath' => null,
             'sourceLanguage' => 'en',
@@ -47,7 +47,7 @@ class Sources extends Component
         if (is_dir($appPath)) {
             $sources['app'] = new TranslationSource([
                 'category' => 'app',
-                'name' => Craft::t('translator-pro', 'Craft control panel'),
+                'name' => Craft::t('translingua', 'Craft control panel'),
                 'type' => TranslationSource::TYPE_APP,
                 'basePath' => $appPath,
                 'sourceLanguage' => 'en',
@@ -98,7 +98,7 @@ class Sources extends Component
 
         foreach (Craft::$app->getPlugins()->getAllPlugins() as $plugin) {
             /** @var PluginInterface&\craft\base\Plugin $plugin */
-            if ($plugin->id === TranslatorPro::$plugin?->id) {
+            if ($plugin->id === Translingua::$plugin?->id) {
                 continue;
             }
 
@@ -155,7 +155,7 @@ class Sources extends Component
      */
     private function attachCounts(): void
     {
-        $translations = TranslatorPro::$plugin->translations;
+        $translations = Translingua::$plugin->translations;
         $locales = $translations->getTargetLocales();
 
         foreach ($this->sources as $source) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\models;
+namespace studionoir\translingua\models;
 
 /**
  * The outcome of translating one element into one site.

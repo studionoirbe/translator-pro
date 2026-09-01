@@ -1,9 +1,9 @@
 <?php
 
-namespace studionoir\translatorpro\controllers;
+namespace studionoir\translingua\controllers;
 
 use craft\web\Controller;
-use studionoir\translatorpro\assetbundles\cp\StylesAsset;
+use studionoir\translingua\assetbundles\cp\StylesAsset;
 
 /**
  * Shared setup for the plugin's control panel screens.

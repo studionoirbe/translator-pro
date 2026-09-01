@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\ElementInterface;
@@ -16,8 +16,8 @@ use craft\fields\PlainText;
 use craft\fields\Table;
 use craft\models\EntryType;
 use craft\models\FieldLayout;
-use studionoir\translatorpro\models\FieldSlot;
-use studionoir\translatorpro\models\TranslatableField;
+use studionoir\translingua\models\FieldSlot;
+use studionoir\translingua\models\TranslatableField;
 
 /**
  * Understands which parts of an element hold translatable copy, and how to read
@@ -82,7 +82,7 @@ class Content extends Component
                     if ($entryType->hasTitleField && $entryType->titleTranslationMethod !== Field::TRANSLATION_METHOD_NONE) {
                         $fields[] = new TranslatableField([
                             'path' => $this->joinPath($prefix, $field->handle, 'title'),
-                            'label' => Craft::t('translator-pro', 'Title'),
+                            'label' => Craft::t('translingua', 'Title'),
                             'groupLabel' => $nestedLabel,
                             'format' => 'text',
                             'type' => 'title',
@@ -138,7 +138,7 @@ class Content extends Component
         if ($includeTitle) {
             $fields['title'] = new TranslatableField([
                 'path' => 'title',
-                'label' => Craft::t('translator-pro', 'Title'),
+                'label' => Craft::t('translingua', 'Title'),
                 'format' => 'text',
                 'type' => 'title',
                 'translatable' => $titleTranslatable,
@@ -187,7 +187,7 @@ class Content extends Component
                 key: $key,
                 element: $element,
                 path: $titlePath,
-                label: Craft::t('translator-pro', 'Title'),
+                label: Craft::t('translingua', 'Title'),
                 format: 'text',
                 translationKey: $element->getTitleTranslationKey(),
                 getter: static fn() => (string)$element->title,

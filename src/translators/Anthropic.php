@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\translators;
+namespace studionoir\translingua\translators;
 
 use Craft;
 
@@ -67,7 +67,7 @@ class Anthropic extends BaseTranslator
         }
 
         if (trim($content) === '') {
-            throw new TranslatorException(Craft::t('translator-pro', 'Anthropic returned an empty response.'));
+            throw new TranslatorException(Craft::t('translingua', 'Anthropic returned an empty response.'));
         }
 
         // Re-attach the prefill so the payload is valid JSON again.

@@ -1,9 +1,9 @@
 <?php
 
-namespace studionoir\translatorpro\records;
+namespace studionoir\translingua\records;
 
 use craft\db\ActiveRecord;
-use studionoir\translatorpro\db\Table;
+use studionoir\translingua\db\Table;
 
 /**
  * Translation settings for one Formie form.

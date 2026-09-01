@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src/logo.svg" width="96" height="96" alt="Translator Pro">
+  <img src="src/logo.svg" width="96" height="96" alt="Translingua">
 </p>
 
-<h1 align="center">Translator Pro</h1>
+<h1 align="center">Translingua</h1>
 
 <p align="center">
   Static translations for templates and plugins, plus AI translation of real content — for Craft CMS 5.
@@ -19,7 +19,7 @@
 
 ---
 
-Craft gives you multi-site content but leaves you to translate it. Translator Pro
+Craft gives you multi-site content but leaves you to translate it. Translingua
 covers both halves of that job: the static strings baked into your templates and
 your plugins, and the actual content sitting in entries, categories, globals and
 Formie forms.
@@ -41,11 +41,11 @@ pressing Save.
 From your project root:
 
 ```bash
-composer require studionoir/translator-pro
+composer require studionoir/translingua
 ```
 
 ```bash
-php craft plugin/install translator-pro
+php craft plugin/install translingua
 ```
 
 Or install it from the Plugin Store in the control panel.
@@ -58,7 +58,7 @@ Plus is normally activated through the Plugin Store. On a local or path-reposito
 install you can switch editions from the command line:
 
 ```bash
-php craft translator-pro/license/set-edition plus
+php craft translingua/license/set-edition plus
 ```
 
 ---
@@ -67,7 +67,7 @@ php craft translator-pro/license/set-edition plus
 
 ### Template translations
 
-Translator Pro scans your templates, modules and local plugins for `|t`,
+Translingua scans your templates, modules and local plugins for `|t`,
 `Craft::t()` and `Craft.t()` calls and lists every string it finds, grouped by
 translation category, so you can translate them per site language.
 
@@ -116,7 +116,7 @@ DeepL, OpenAI, Anthropic (Claude) or Google Gemini, with your own key. Keys
 support environment variables, so nothing secret needs to be committed:
 
 ```
-$TRANSLATOR_PRO_KEY
+$TRANSLINGUA_KEY
 ```
 
 The buttons only appear once a real request to the provider has succeeded — a key
@@ -154,9 +154,9 @@ It appears only where the page *is* content — entry, category and global set e
 screens, plus SEOmatic's Global SEO and Content SEO. On a settings screen
 "translate everything" would rewrite configuration, so it is not offered there.
 
-### Switching Translator Pro off per source
+### Switching Translingua off per source
 
-Sections, category groups and global sets each carry a **Translator Pro** toggle
+Sections, category groups and global sets each carry a **Translingua** toggle
 on their own settings screen, beside Craft's other switches. Turn it off and that
 source is left alone entirely: no translate buttons on its entries, no page
 button, and it stops appearing as a choice in AI translations.
@@ -179,7 +179,7 @@ be rolled back from the element's revision menu.
 
 ### The Formie tab
 
-Formie's form builder gets a Translator Pro tab, where you can:
+Formie's form builder gets a Translingua tab, where you can:
 
 - **Set the language the form is written in.** A Formie form isn't stored per site
   the way an entry is, so the current site is a poor guess at what a translation
@@ -207,7 +207,7 @@ collected in the first place.
 
 ## Configuration
 
-Settings live at **Translator Pro → Settings**, or in `config/translator-pro.php`
+Settings live at **Translingua → Settings**, or in `config/translingua.php`
 for anything you would rather keep in code:
 
 ```php
@@ -215,7 +215,7 @@ for anything you would rather keep in code:
 
 return [
     'provider' => 'deepl',
-    'apiKey' => '$TRANSLATOR_PRO_KEY',
+    'apiKey' => '$TRANSLINGUA_KEY',
     'promptContext' => 'Address the reader informally. Leave product names in English.',
     'batchSize' => 25,
     'createRevisions' => true,
@@ -245,15 +245,15 @@ translations**. Plugin settings remain admin-only.
 ## Console commands
 
 ```bash
-php craft translator-pro/translate/sources
+php craft translingua/translate/sources
 ```
 
 ```bash
-php craft translator-pro/translate/scan
+php craft translingua/translate/scan
 ```
 
 ```bash
-php craft translator-pro/translate/elements --from=siteHandle --to=otherSite --groups="Blog,News"
+php craft translingua/translate/elements --from=siteHandle --to=otherSite --groups="Blog,News"
 ```
 
 Add `--inline` to run immediately instead of queueing, and `--overwrite` to
@@ -287,7 +287,7 @@ licence per Craft install. See [LICENSE.md](LICENSE.md).
 
 ## Support
 
-- Issues: [GitHub issues](https://github.com/studionoirbe/translator-pro/issues)
+- Issues: [GitHub issues](https://github.com/studionoirbe/translingua/issues)
 - Email: [info@studionoir.be](mailto:info@studionoir.be)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 

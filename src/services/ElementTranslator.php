@@ -1,14 +1,14 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
 use craft\base\ElementInterface;
-use studionoir\translatorpro\models\FieldSlot;
-use studionoir\translatorpro\models\TranslationResult;
-use studionoir\translatorpro\translators\TranslatorException;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\FieldSlot;
+use studionoir\translingua\models\TranslationResult;
+use studionoir\translingua\translators\TranslatorException;
+use studionoir\translingua\Translingua;
 
 /**
  * Translates a real element from one site's content into another's.
@@ -37,7 +37,7 @@ class ElementTranslator extends Component
         $result = new TranslationResult();
 
         if ($sourceSiteId === $targetSiteId) {
-            $result->errors[] = Craft::t('translator-pro', 'Source and target site are the same.');
+            $result->errors[] = Craft::t('translingua', 'Source and target site are the same.');
             return $result;
         }
 
@@ -45,7 +45,7 @@ class ElementTranslator extends Component
         $target = $this->loadElement($elementType, $elementId, $targetSiteId);
 
         if ($source === null || $target === null) {
-            $result->errors[] = Craft::t('translator-pro', 'Element {id} doesn’t exist in both sites.', ['id' => $elementId]);
+            $result->errors[] = Craft::t('translingua', 'Element {id} doesn’t exist in both sites.', ['id' => $elementId]);
             return $result;
         }
 
@@ -53,11 +53,11 @@ class ElementTranslator extends Component
         $targetLanguage = Craft::$app->getSites()->getSiteById($targetSiteId)?->language;
 
         if ($targetLanguage === null) {
-            $result->errors[] = Craft::t('translator-pro', 'Unknown target site.');
+            $result->errors[] = Craft::t('translingua', 'Unknown target site.');
             return $result;
         }
 
-        $content = TranslatorPro::$plugin->content;
+        $content = Translingua::$plugin->content;
         $sourceSlots = $content->collectSlots($source, $paths);
         $targetSlots = $content->collectSlots($target, $paths);
 
@@ -109,7 +109,7 @@ class ElementTranslator extends Component
 
         foreach ($byFormat as $format => $group) {
             try {
-                $translated += TranslatorPro::$plugin->translator->translate(
+                $translated += Translingua::$plugin->translator->translate(
                     $group,
                     $sourceLanguage,
                     $targetLanguage,
@@ -158,7 +158,7 @@ class ElementTranslator extends Component
     private function save(ElementInterface $target, array $touched, TranslationResult $result): void
     {
         $elementsService = Craft::$app->getElements();
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
         $ownerId = spl_object_id($target);
 
         // Nested entries first, owner last.
@@ -174,7 +174,7 @@ class ElementTranslator extends Component
                 Craft::$app->getRevisions()->createRevision(
                     $target,
                     Craft::$app->getUser()->getId(),
-                    Craft::t('translator-pro', 'Before AI translation'),
+                    Craft::t('translingua', 'Before AI translation'),
                 );
             } catch (\Throwable $e) {
                 // A missing revision must never block the translation itself.

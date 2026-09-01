@@ -1,5 +1,5 @@
 {
-    "name": "studionoir/translator-pro",
+    "name": "studionoir/translingua",
     "description": "Static template & plugin translations, plus AI-powered field and batch translations for Craft CMS",
     "type": "craft-plugin",
     "license": "proprietary",
@@ -24,9 +24,9 @@
     ],
     "support": {
         "email": "info@studionoir.be",
-        "issues": "https://github.com/studionoirbe/translator-pro/issues",
-        "source": "https://github.com/studionoirbe/translator-pro",
-        "docs": "https://github.com/studionoirbe/translator-pro#readme"
+        "issues": "https://github.com/studionoirbe/translingua/issues",
+        "source": "https://github.com/studionoirbe/translingua",
+        "docs": "https://github.com/studionoirbe/translingua#readme"
     },
     "require": {
         "php": ">=8.2",
@@ -38,17 +38,17 @@
     },
     "autoload": {
         "psr-4": {
-            "studionoir\\translatorpro\\": "src/"
+            "studionoir\\translingua\\": "src/"
         }
     },
     "extra": {
-        "handle": "translator-pro",
-        "name": "Translator Pro",
+        "handle": "translingua",
+        "name": "Translingua",
         "developer": "Studio Noir",
         "developerUrl": "https://studionoir.be",
-        "documentationUrl": "https://github.com/studionoirbe/translator-pro#readme",
-        "changelogUrl": "https://raw.githubusercontent.com/studionoirbe/translator-pro/main/CHANGELOG.md",
-        "class": "studionoir\\translatorpro\\TranslatorPro"
+        "documentationUrl": "https://github.com/studionoirbe/translingua#readme",
+        "changelogUrl": "https://raw.githubusercontent.com/studionoirbe/translingua/main/CHANGELOG.md",
+        "class": "studionoir\\translingua\\Translingua"
     },
     "scripts": {
         "check-cs": "ecs check --ansi",

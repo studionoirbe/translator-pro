@@ -1,4 +1,4 @@
-# Release Notes for Translator Pro
+# Release Notes for Translingua
 
 ## 1.0.0 - 2026-08-28
 
@@ -22,8 +22,8 @@ Initial release.
 - A **Translate page** button next to Save, limited to entry, category and global set edit screens plus SEOmatic's Global SEO and Content SEO. Configurable via the `pageButtonPaths` setting.
 - Batch translation of entries, categories and global sets from one site into any number of others, on the queue, with per-field selection that reaches into Matrix blocks. Fields whose translation method is `none` are shown but disabled, since Craft stores one value for every site.
 - Optionally creates a revision before each batch write, so a run can be rolled back from the element's revision menu.
-- A Translator Pro tab in Formie's form builder: set the language the form is written in, and translate the whole form server-side. Field handles, option values, CSS classes and input attributes are never translated.
-- A **Translator Pro** toggle on each section, category group and global set's own settings screen, governing every feature for that source.
+- A Translingua tab in Formie's form builder: set the language the form is written in, and translate the whole form server-side. Field handles, option values, CSS classes and input attributes are never translated.
+- A **Translingua** toggle on each section, category group and global set's own settings screen, governing every feature for that source.
 - Identical strings are cached for a month, so re-running a batch costs nothing for anything already translated.
 - Console commands for listing sources, scanning templates and running batch translations.
 

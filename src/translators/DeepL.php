@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\translators;
+namespace studionoir\translingua\translators;
 
 use Craft;
 
@@ -54,7 +54,7 @@ class DeepL extends BaseTranslator
         ]);
 
         if (!isset($response['translations']) || !is_array($response['translations'])) {
-            throw new TranslatorException(Craft::t('translator-pro', 'DeepL returned no translations.'));
+            throw new TranslatorException(Craft::t('translingua', 'DeepL returned no translations.'));
         }
 
         $translations = [];
@@ -65,7 +65,7 @@ class DeepL extends BaseTranslator
 
         if (count($translations) !== count($texts)) {
             throw new TranslatorException(Craft::t(
-                'translator-pro',
+                'translingua',
                 '{provider} returned {got} translations for {expected} strings.',
                 ['provider' => 'DeepL', 'got' => count($translations), 'expected' => count($texts)],
             ));

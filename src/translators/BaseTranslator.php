@@ -1,13 +1,13 @@
 <?php
 
-namespace studionoir\translatorpro\translators;
+namespace studionoir\translingua\translators;
 
 use Craft;
 use craft\base\Component;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use studionoir\translatorpro\models\Settings;
+use studionoir\translingua\models\Settings;
 
 /**
  * Shared plumbing for the providers: HTTP, error handling and prompt building.
@@ -41,7 +41,7 @@ abstract class BaseTranslator extends Component implements TranslatorInterface
         $key = $this->settings->getResolvedApiKey();
 
         if ($key === '') {
-            throw new TranslatorException(Craft::t('translator-pro', 'No API key is configured for {provider}.', [
+            throw new TranslatorException(Craft::t('translingua', 'No API key is configured for {provider}.', [
                 'provider' => $this->getName(),
             ]));
         }
@@ -89,7 +89,7 @@ abstract class BaseTranslator extends Component implements TranslatorInterface
         $decoded = json_decode($contents, true);
 
         if (!is_array($decoded)) {
-            throw new TranslatorException(Craft::t('translator-pro', '{provider} returned an unreadable response.', [
+            throw new TranslatorException(Craft::t('translingua', '{provider} returned an unreadable response.', [
                 'provider' => $this->getName(),
             ]));
         }
@@ -115,9 +115,9 @@ abstract class BaseTranslator extends Component implements TranslatorInterface
         }
 
         return match ($status) {
-            401, 403 => Craft::t('translator-pro', 'The {provider} API key was rejected.', ['provider' => $this->getName()]),
-            429 => Craft::t('translator-pro', '{provider} rate limit or quota reached. Try again shortly.', ['provider' => $this->getName()]),
-            456 => Craft::t('translator-pro', 'Your {provider} character quota is used up.', ['provider' => $this->getName()]),
+            401, 403 => Craft::t('translingua', 'The {provider} API key was rejected.', ['provider' => $this->getName()]),
+            429 => Craft::t('translingua', '{provider} rate limit or quota reached. Try again shortly.', ['provider' => $this->getName()]),
+            456 => Craft::t('translingua', 'Your {provider} character quota is used up.', ['provider' => $this->getName()]),
             default => $detail !== '' ? $detail : $fallback,
         };
     }
@@ -181,14 +181,14 @@ abstract class BaseTranslator extends Component implements TranslatorInterface
         } elseif (is_array($decoded) && array_is_list($decoded)) {
             $translations = $decoded;
         } else {
-            throw new TranslatorException(Craft::t('translator-pro', '{provider} did not return valid JSON.', [
+            throw new TranslatorException(Craft::t('translingua', '{provider} did not return valid JSON.', [
                 'provider' => $this->getName(),
             ]));
         }
 
         if (count($translations) !== count($texts)) {
             throw new TranslatorException(Craft::t(
-                'translator-pro',
+                'translingua',
                 '{provider} returned {got} translations for {expected} strings.',
                 [
                     'provider' => $this->getName(),

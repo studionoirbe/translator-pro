@@ -1,15 +1,15 @@
 <?php
 
-namespace studionoir\translatorpro\controllers;
+namespace studionoir\translingua\controllers;
 
 use Craft;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\Translingua;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 /**
- * Backs the Translator Pro tab in Formie's form builder.
+ * Backs the Translingua tab in Formie's form builder.
  */
 class FormieController extends BaseController
 {
@@ -21,7 +21,7 @@ class FormieController extends BaseController
 
         $this->requireCpRequest();
 
-        if (!TranslatorPro::$plugin->formie->isAvailable()) {
+        if (!Translingua::$plugin->formie->isAvailable()) {
             throw new NotFoundHttpException('Formie isn’t installed.');
         }
 
@@ -42,19 +42,19 @@ class FormieController extends BaseController
 
         $this->requireFormPermission($formId);
 
-        $languages = TranslatorPro::$plugin->translations->getTargetLocales();
+        $languages = Translingua::$plugin->translations->getTargetLocales();
 
         foreach ([$targetLanguage, $sourceLanguage] as $language) {
             if ($language !== '' && !in_array($language, $languages, true)) {
-                $this->setFailFlash(Craft::t('translator-pro', 'Unknown language “{language}”.', ['language' => $language]));
+                $this->setFailFlash(Craft::t('translingua', 'Unknown language “{language}”.', ['language' => $language]));
 
                 return null;
             }
         }
 
-        TranslatorPro::$plugin->formie->saveSettings($formId, $targetLanguage, $sourceLanguage);
+        Translingua::$plugin->formie->saveSettings($formId, $targetLanguage, $sourceLanguage);
 
-        $this->setSuccessFlash(Craft::t('translator-pro', 'Translation settings saved.'));
+        $this->setSuccessFlash(Craft::t('translingua', 'Translation settings saved.'));
 
         return $this->redirectToPostedUrl();
     }
@@ -66,22 +66,22 @@ class FormieController extends BaseController
     {
         $this->requirePostRequest();
 
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
         $request = Craft::$app->getRequest();
         $formId = (int)$request->getRequiredBodyParam('formId');
 
         $this->requireFormPermission($formId);
 
         if (!$plugin->isPlus()) {
-            $this->setFailFlash(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
+            $this->setFailFlash(Craft::t('translingua', 'AI translations require the Plus edition.'));
 
             return null;
         }
 
-        $this->requirePermission(TranslatorPro::PERMISSION_AI);
+        $this->requirePermission(Translingua::PERMISSION_AI);
 
         if (!$plugin->translator->verify()) {
-            $this->setFailFlash(Craft::t('translator-pro', 'The connection to the AI provider isn’t working: {message}', [
+            $this->setFailFlash(Craft::t('translingua', 'The connection to the AI provider isn’t working: {message}', [
                 'message' => $plugin->translator->getVerificationError() ?? '',
             ]));
 
@@ -101,7 +101,7 @@ class FormieController extends BaseController
         $overwrite = (bool)$request->getBodyParam('overwrite', true);
 
         if ($targetLanguage === '') {
-            $this->setFailFlash(Craft::t('translator-pro', 'Set the language of this form first.'));
+            $this->setFailFlash(Craft::t('translingua', 'Set the language of this form first.'));
 
             return null;
         }
@@ -118,12 +118,12 @@ class FormieController extends BaseController
         }
 
         if ($result->translated === 0) {
-            $this->setSuccessFlash(Craft::t('translator-pro', 'Nothing left to translate.'));
+            $this->setSuccessFlash(Craft::t('translingua', 'Nothing left to translate.'));
 
             return $this->redirectToPostedUrl();
         }
 
-        $this->setSuccessFlash(Craft::t('translator-pro', '{count} strings translated into {language}.', [
+        $this->setSuccessFlash(Craft::t('translingua', '{count} strings translated into {language}.', [
             'count' => $result->translated,
             'language' => $targetLanguage,
         ]));
@@ -136,7 +136,7 @@ class FormieController extends BaseController
      */
     private function requireFormPermission(int $formId): void
     {
-        $form = TranslatorPro::$plugin->formie->getForm($formId);
+        $form = Translingua::$plugin->formie->getForm($formId);
 
         if ($form === null) {
             throw new NotFoundHttpException('Form not found.');

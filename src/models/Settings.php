@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\models;
+namespace studionoir\translingua\models;
 
 use Craft;
 use craft\base\Model;
@@ -8,7 +8,7 @@ use craft\behaviors\EnvAttributeParserBehavior;
 use craft\helpers\App;
 
 /**
- * Translator Pro settings.
+ * Translingua settings.
  *
  * @property-read string $resolvedApiKey
  */
@@ -116,7 +116,7 @@ class Settings extends Model
     public array $disabledGlobalSetUids = [];
 
     /**
-     * @var string[] UIDs of category groups Translator Pro is switched off for.
+     * @var string[] UIDs of category groups Translingua is switched off for.
      */
     public array $disabledCategoryGroupUids = [];
 
@@ -140,7 +140,7 @@ class Settings extends Model
         // Plugin configuration, as opposed to the content those plugins hold.
         'formie/settings',
         // Our own screens: the translation editor is not itself translatable.
-        'translator-pro',
+        'translingua',
     ];
 
     /**
@@ -202,7 +202,7 @@ class Settings extends Model
 
         if (is_string($value)) {
             // A newline- or comma-separated string is a reasonable thing to
-            // write by hand in config/translator-pro.php.
+            // write by hand in config/translingua.php.
             $value = preg_split('/[\r\n,]+/', $value) ?: [];
         }
 
@@ -363,7 +363,7 @@ class Settings extends Model
     }
 
     /**
-     * Whether Translator Pro is switched on for a category group.
+     * Whether Translingua is switched on for a category group.
      */
     public function allowsCategoryGroup(?string $uid): bool
     {

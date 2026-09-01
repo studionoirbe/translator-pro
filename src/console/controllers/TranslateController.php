@@ -1,13 +1,13 @@
 <?php
 
-namespace studionoir\translatorpro\console\controllers;
+namespace studionoir\translingua\console\controllers;
 
 use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
-use studionoir\translatorpro\jobs\TranslateElementsJob;
-use studionoir\translatorpro\services\Batch;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\jobs\TranslateElementsJob;
+use studionoir\translingua\services\Batch;
+use studionoir\translingua\Translingua;
 use yii\console\ExitCode;
 
 /**
@@ -58,8 +58,8 @@ class TranslateController extends Controller
      */
     public function actionScan(): int
     {
-        TranslatorPro::$plugin->scanner->invalidate();
-        $strings = TranslatorPro::$plugin->scanner->getAllStrings();
+        Translingua::$plugin->scanner->invalidate();
+        $strings = Translingua::$plugin->scanner->getAllStrings();
 
         foreach ($strings as $category => $found) {
             $this->stdout(sprintf("%-20s %d strings" . PHP_EOL, $category, count($found)));
@@ -77,7 +77,7 @@ class TranslateController extends Controller
      */
     public function actionSources(): int
     {
-        foreach (TranslatorPro::$plugin->sources->getAll() as $source) {
+        foreach (Translingua::$plugin->sources->getAll() as $source) {
             $this->stdout(sprintf(
                 "%-24s %-12s %d strings" . PHP_EOL,
                 $source->category,
@@ -94,13 +94,13 @@ class TranslateController extends Controller
      */
     public function actionElements(): int
     {
-        if (!TranslatorPro::$plugin->isPlus()) {
+        if (!Translingua::$plugin->isPlus()) {
             $this->stderr('AI translations require the Plus edition.' . PHP_EOL, Console::FG_RED);
 
             return ExitCode::UNAVAILABLE;
         }
 
-        if (!TranslatorPro::$plugin->getSettings()->isConfigured()) {
+        if (!Translingua::$plugin->getSettings()->isConfigured()) {
             $this->stderr('No API key is configured.' . PHP_EOL, Console::FG_RED);
 
             return ExitCode::CONFIG;
@@ -172,7 +172,7 @@ class TranslateController extends Controller
     private function resolveGroupIds(): array
     {
         $wanted = array_filter(array_map('trim', explode(',', $this->groups)));
-        $available = TranslatorPro::$plugin->batch->getGroups($this->type);
+        $available = Translingua::$plugin->batch->getGroups($this->type);
 
         if ($wanted === []) {
             return array_keys($available);

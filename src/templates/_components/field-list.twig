@@ -11,7 +11,7 @@
         >
         <label for="{{ inputId }}"{% if not field.translatable %} class="tp-shared"{% endif %}>
             {{ field.fullLabel }}
-            {%- if not field.translatable %} — {{ "not translatable per site"|t('translator-pro') }}{% endif %}
+            {%- if not field.translatable %} — {{ "not translatable per site"|t('translingua') }}{% endif %}
         </label>
     </div>
 {% endfor %}

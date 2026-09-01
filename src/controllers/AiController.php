@@ -1,11 +1,11 @@
 <?php
 
-namespace studionoir\translatorpro\controllers;
+namespace studionoir\translingua\controllers;
 
 use Craft;
 use craft\web\Controller;
-use studionoir\translatorpro\translators\TranslatorException;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\translators\TranslatorException;
+use studionoir\translingua\Translingua;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
@@ -34,20 +34,20 @@ class AiController extends Controller
         $this->requireCpRequest();
         $this->requireAcceptsJson();
 
-        if (!TranslatorPro::$plugin->isPlus()) {
-            throw new ForbiddenHttpException(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
+        if (!Translingua::$plugin->isPlus()) {
+            throw new ForbiddenHttpException(Craft::t('translingua', 'AI translations require the Plus edition.'));
         }
 
-        $this->requirePermission(TranslatorPro::PERMISSION_AI);
+        $this->requirePermission(Translingua::PERMISSION_AI);
 
         // The buttons are only rendered for a verified connection, so reaching
         // here unverified means either a stale page or a direct call.
-        $translator = TranslatorPro::$plugin->translator;
+        $translator = Translingua::$plugin->translator;
 
         if (!$translator->isVerified() && !$translator->verify()) {
             throw new ForbiddenHttpException(
                 $translator->getVerificationError()
-                    ?? Craft::t('translator-pro', 'The AI provider connection hasn’t been verified.'),
+                    ?? Craft::t('translingua', 'The AI provider connection hasn’t been verified.'),
             );
         }
 
@@ -80,11 +80,11 @@ class AiController extends Controller
         }
 
         if ($sourceLanguage === $targetLanguage) {
-            return $this->asFailure(Craft::t('translator-pro', 'Pick a different language to translate from.'));
+            return $this->asFailure(Craft::t('translingua', 'Pick a different language to translate from.'));
         }
 
         if (count($items) > self::MAX_TEXTS) {
-            return $this->asFailure(Craft::t('translator-pro', 'Too many fields in one request. Translate the page in sections.'));
+            return $this->asFailure(Craft::t('translingua', 'Too many fields in one request. Translate the page in sections.'));
         }
 
         // Group by format so HTML fields keep their markup.
@@ -107,7 +107,7 @@ class AiController extends Controller
             $characters += mb_strlen($text);
 
             if ($characters > self::MAX_CHARS) {
-                return $this->asFailure(Craft::t('translator-pro', 'Too much content in one request. Translate the page in sections.'));
+                return $this->asFailure(Craft::t('translingua', 'Too much content in one request. Translate the page in sections.'));
             }
 
             $byFormat[$format][$id] = $text;
@@ -121,7 +121,7 @@ class AiController extends Controller
 
         foreach ($byFormat as $format => $group) {
             try {
-                $translations += TranslatorPro::$plugin->translator->translate(
+                $translations += Translingua::$plugin->translator->translate(
                     $group,
                     is_string($sourceLanguage) && $sourceLanguage !== '' ? $sourceLanguage : null,
                     $targetLanguage,
@@ -131,7 +131,7 @@ class AiController extends Controller
                 return $this->asFailure($e->getMessage());
             } catch (\Throwable $e) {
                 Craft::error("Translation request failed: {$e->getMessage()}", __METHOD__);
-                return $this->asFailure(Craft::t('translator-pro', 'Translation failed. Check the logs for details.'));
+                return $this->asFailure(Craft::t('translingua', 'Translation failed. Check the logs for details.'));
             }
         }
 

@@ -2,33 +2,33 @@
 {% import "_includes/forms.twig" as forms %}
 
 {% set selectedSubnavItem = 'static' %}
-{% set title = "Static translations"|t('translator-pro') %}
+{% set title = "Static translations"|t('translingua') %}
 
 {% block actionButton %}
     <form method="post" accept-charset="UTF-8">
         {{ csrfInput() }}
-        {{ actionInput('translator-pro/static/rescan') }}
-        {{ redirectInput('translator-pro/static') }}
-        <button type="submit" class="btn">{{ "Rescan templates"|t('translator-pro') }}</button>
+        {{ actionInput('translingua/static/rescan') }}
+        {{ redirectInput('translingua/static') }}
+        <button type="submit" class="btn">{{ "Rescan templates"|t('translingua') }}</button>
     </form>
 {% endblock %}
 
 {% block content %}
     <p class="light">
-        {{ "Translations are written to {path}. Craft loads that folder on top of each plugin’s own language files, so nothing inside vendor/ is ever touched."|t('translator-pro', {
+        {{ "Translations are written to {path}. Craft loads that folder on top of each plugin’s own language files, so nothing inside vendor/ is ever touched."|t('translingua', {
             path: '<code>translations/{locale}/{category}.php</code>'
         })|raw }}
     </p>
 
     {% if sources is empty %}
-        <p>{{ "No translation sources found."|t('translator-pro') }}</p>
+        <p>{{ "No translation sources found."|t('translingua') }}</p>
     {% else %}
         <table class="data fullwidth">
             <thead>
                 <tr>
-                    <th scope="col">{{ "Source"|t('translator-pro') }}</th>
-                    <th scope="col">{{ "Category"|t('translator-pro') }}</th>
-                    <th scope="col">{{ "Strings"|t('translator-pro') }}</th>
+                    <th scope="col">{{ "Source"|t('translingua') }}</th>
+                    <th scope="col">{{ "Category"|t('translingua') }}</th>
+                    <th scope="col">{{ "Strings"|t('translingua') }}</th>
                     {% for locale, label in locales %}
                         <th scope="col">{{ locale }}</th>
                     {% endfor %}
@@ -38,9 +38,9 @@
             <tbody>
                 {% for source in sources %}
                     {% set typeLabel = {
-                        site: "Templates"|t('translator-pro'),
-                        app: "Craft"|t('translator-pro'),
-                        plugin: "Plugin"|t('translator-pro'),
+                        site: "Templates"|t('translingua'),
+                        app: "Craft"|t('translingua'),
+                        plugin: "Plugin"|t('translingua'),
                     }[source.type] ?? source.type %}
                     <tr>
                         <th scope="row">
@@ -53,14 +53,14 @@
                             {% set missing = translations.getMissingCount(source, locale) %}
                             <td>
                                 {% if missing == 0 %}
-                                    <span class="success">{{ "Complete"|t('translator-pro') }}</span>
+                                    <span class="success">{{ "Complete"|t('translingua') }}</span>
                                 {% else %}
-                                    <span class="light">{{ "{n} missing"|t('translator-pro', { n: missing }) }}</span>
+                                    <span class="light">{{ "{n} missing"|t('translingua', { n: missing }) }}</span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                         <td class="thin">
-                            <a class="btn small" href="{{ source.cpEditUrl }}">{{ "Edit"|t('translator-pro') }}</a>
+                            <a class="btn small" href="{{ source.cpEditUrl }}">{{ "Edit"|t('translingua') }}</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -68,12 +68,12 @@
         </table>
     {% endif %}
 
-    <h2 style="margin-top: 32px;">{{ "Scanned for template strings"|t('translator-pro') }}</h2>
+    <h2 style="margin-top: 32px;">{{ "Scanned for template strings"|t('translingua') }}</h2>
     <ul class="light">
         {% for path in scanPaths %}
             <li><code>{{ path }}</code></li>
         {% else %}
-            <li>{{ "No scannable directories were found."|t('translator-pro') }}</li>
+            <li>{{ "No scannable directories were found."|t('translingua') }}</li>
         {% endfor %}
     </ul>
 {% endblock %}

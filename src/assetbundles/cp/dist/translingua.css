@@ -1,5 +1,5 @@
 /**
- * Translator Pro — control panel styles.
+ * Translingua — control panel styles.
  *
  * Everything is scoped to `.tp-*` and sized to sit inside Craft's own field
  * headings without pushing anything around.
@@ -441,7 +441,7 @@
 }
 
 
-/* Formie form builder — the Translator Pro tab. */
+/* Formie form builder — the Translingua tab. */
 .tp-formie-pane {
     max-width: 760px;
 }

@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Translator Pro — English source strings.
+ * Translingua — English source strings.
  *
- * The keys are the strings passed to `Craft::t('translator-pro', …)`. Copy this
- * file to `translations/{locale}/translator-pro.php` in a project to override
+ * The keys are the strings passed to `Craft::t('translingua', …)`. Copy this
+ * file to `translations/{locale}/translingua.php` in a project to override
  * any of them — or just edit them through the plugin itself.
  */
 
 return [
-    'Translator Pro' => 'Translator Pro',
+    'Translingua' => 'Translingua',
     'Static translations' => 'Static translations',
     'AI translations' => 'AI translations',
     'Settings' => 'Settings',
@@ -134,7 +134,7 @@ return [
     'File extensions' => 'File extensions',
     'Strings per request' => 'Strings per request',
     'AI translations require the Plus edition.' => 'AI translations require the Plus edition.',
-    'AI translations require the Plus edition of Translator Pro.' => 'AI translations require the Plus edition of Translator Pro.',
+    'AI translations require the Plus edition of Translingua.' => 'AI translations require the Plus edition of Translingua.',
     'Enter an API key first.' => 'Enter an API key first.',
     'Pick a different language to translate from.' => 'Pick a different language to translate from.',
     'Translation failed. Check the logs for details.' => 'Translation failed. Check the logs for details.',
@@ -195,9 +195,9 @@ return [
     'Never show any translate button on' => 'Never show any translate button on',
     'Control panel paths that get no translate buttons at all, without the /admin prefix. A path also covers everything below it, so “settings” covers creating a field.' => 'Control panel paths that get no translate buttons at all, without the /admin prefix. A path also covers everything below it, so “settings” covers creating a field.',
 
-    'Translator Pro' => 'Translator Pro',
-    'Make Translator Pro available for entries in this section' => 'Make Translator Pro available for entries in this section',
-    'Make Translator Pro available for this section' => 'Make Translator Pro available for this section',
-    'Make Translator Pro available for this global' => 'Make Translator Pro available for this global',
-    'Make Translator Pro available in this category group' => 'Make Translator Pro available in this category group',
+    'Translingua' => 'Translingua',
+    'Make Translingua available for entries in this section' => 'Make Translingua available for entries in this section',
+    'Make Translingua available for this section' => 'Make Translingua available for this section',
+    'Make Translingua available for this global' => 'Make Translingua available for this global',
+    'Make Translingua available in this category group' => 'Make Translingua available in this category group',
 ];

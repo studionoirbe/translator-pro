@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\models;
+namespace studionoir\translingua\models;
 
 use craft\base\Model;
 

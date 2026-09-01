@@ -1,6 +1,6 @@
 {% import '_includes/forms' as forms %}
 
-{% set plugin = craft.app.plugins.getPlugin('translator-pro') %}
+{% set plugin = craft.app.plugins.getPlugin('translingua') %}
 {% set bridge = plugin.formie %}
 {% set formId = form.id %}
 
@@ -12,7 +12,7 @@
 
 {# Detection first: the form's text is right there, so the provider can work
    out its language without anyone having to say so. #}
-{% set sourceOptions = [{ label: "Detect automatically"|t('translator-pro'), value: '' }] %}
+{% set sourceOptions = [{ label: "Detect automatically"|t('translingua'), value: '' }] %}
 {% for code, label in languages %}
     {% if code != targetLanguage %}
         {% set sourceOptions = sourceOptions|merge([{ label: label, value: code }]) %}
@@ -20,24 +20,24 @@
 {% endfor %}
 
 <div class="tp-formie-pane">
-    <h2>{{ "Translator Pro"|t('translator-pro') }}</h2>
+    <h2>{{ "Translingua"|t('translingua') }}</h2>
 
     <p class="light">
-        {{ "A Formie form isn’t stored per site — its labels live in the form itself. Translating rewrites this form in place, so duplicate the form first if you want to keep the original."|t('translator-pro') }}
+        {{ "A Formie form isn’t stored per site — its labels live in the form itself. Translating rewrites this form in place, so duplicate the form first if you want to keep the original."|t('translingua') }}
     </p>
 
     {# ---- The form's own language ---------------------------------------- #}
     <form method="post" accept-charset="UTF-8" class="tp-formie-block">
         {{ csrfInput() }}
-        {{ actionInput('translator-pro/formie/save-settings') }}
-        {{ redirectInput('formie/forms/edit/' ~ formId ~ '#tab-translator-pro') }}
+        {{ actionInput('translingua/formie/save-settings') }}
+        {{ redirectInput('formie/forms/edit/' ~ formId ~ '#tab-translingua') }}
         {{ hiddenInput('formId', formId) }}
 
-        <h3>{{ "Language of this form"|t('translator-pro') }}</h3>
+        <h3>{{ "Language of this form"|t('translingua') }}</h3>
 
         {{ forms.selectField({
-            label: "This form is written in"|t('translator-pro'),
-            instructions: "Used as the target language when translating this form, and shown on the translate buttons throughout the builder."|t('translator-pro'),
+            label: "This form is written in"|t('translingua'),
+            instructions: "Used as the target language when translating this form, and shown on the translate buttons throughout the builder."|t('translingua'),
             name: 'targetLanguage',
             options: languages,
             value: targetLanguage,
@@ -45,12 +45,12 @@
 
         {% if not bridge.hasExplicitLanguage(formId) and targetLanguage %}
             <p class="light smalltext">
-                {{ "Currently inherited from the site this form belongs to."|t('translator-pro') }}
+                {{ "Currently inherited from the site this form belongs to."|t('translingua') }}
             </p>
         {% endif %}
 
         <div class="buttons">
-            <button type="submit" class="btn submit">{{ "Save language"|t('translator-pro') }}</button>
+            <button type="submit" class="btn submit">{{ "Save language"|t('translingua') }}</button>
         </div>
     </form>
 
@@ -58,70 +58,70 @@
 
     {# ---- Translate the whole form ---------------------------------------- #}
     <div class="tp-formie-block">
-        <h3>{{ "Translate this form"|t('translator-pro') }}</h3>
+        <h3>{{ "Translate this form"|t('translingua') }}</h3>
 
         {% if not isPlus %}
-            <p class="error">{{ "AI translations require the Plus edition."|t('translator-pro') }}</p>
+            <p class="error">{{ "AI translations require the Plus edition."|t('translingua') }}</p>
         {% elseif not ready %}
             <p class="error">
-                {{ "The AI provider connection isn’t working yet."|t('translator-pro') }}
-                <a href="{{ url('translator-pro/settings') }}">{{ "Open settings"|t('translator-pro') }}</a>
+                {{ "The AI provider connection isn’t working yet."|t('translingua') }}
+                <a href="{{ url('translingua/settings') }}">{{ "Open settings"|t('translingua') }}</a>
             </p>
         {% elseif not targetLanguage %}
-            <p class="light">{{ "Set the language of this form first."|t('translator-pro') }}</p>
+            <p class="light">{{ "Set the language of this form first."|t('translingua') }}</p>
         {% else %}
             {% set slots = bridge.collectSlots(form) %}
 
             <p class="light">
-                {{ "{count} translatable strings found: labels, placeholders, instructions, error messages, option labels, page and button labels."|t('translator-pro', { count: slots|length }) }}
+                {{ "{count} translatable strings found: labels, placeholders, instructions, error messages, option labels, page and button labels."|t('translingua', { count: slots|length }) }}
             </p>
 
             <p class="light smalltext">
-                <strong>{{ "Never touched:"|t('translator-pro') }}</strong>
-                {{ "field handles, option values, CSS classes, input attributes and default values."|t('translator-pro') }}
+                <strong>{{ "Never touched:"|t('translingua') }}</strong>
+                {{ "field handles, option values, CSS classes, input attributes and default values."|t('translingua') }}
             </p>
 
             <form method="post" accept-charset="UTF-8">
                 {{ csrfInput() }}
-                {{ actionInput('translator-pro/formie/translate') }}
-                {{ redirectInput('formie/forms/edit/' ~ formId ~ '#tab-translator-pro') }}
+                {{ actionInput('translingua/formie/translate') }}
+                {{ redirectInput('formie/forms/edit/' ~ formId ~ '#tab-translingua') }}
                 {{ hiddenInput('formId', formId) }}
                 {{ hiddenInput('targetLanguage', targetLanguage) }}
 
                 {{ forms.selectField({
-                    label: "Translate from"|t('translator-pro'),
-                    instructions: "Leave on detection unless the provider gets it wrong."|t('translator-pro'),
+                    label: "Translate from"|t('translingua'),
+                    instructions: "Leave on detection unless the provider gets it wrong."|t('translingua'),
                     name: 'sourceLanguage',
                     options: sourceOptions,
                     value: sourceLanguage,
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Overwrite everything"|t('translator-pro'),
-                    instructions: "On by default: translating a form replaces its copy rather than filling gaps."|t('translator-pro'),
+                    label: "Overwrite everything"|t('translingua'),
+                    instructions: "On by default: translating a form replaces its copy rather than filling gaps."|t('translingua'),
                     name: 'overwrite',
                     on: true,
                 }) }}
 
                 <div class="buttons">
                     <button type="submit" class="btn submit">
-                        {{ "Translate into {language}"|t('translator-pro', { language: languages[targetLanguage] ?? targetLanguage }) }}
+                        {{ "Translate into {language}"|t('translingua', { language: languages[targetLanguage] ?? targetLanguage }) }}
                     </button>
                 </div>
 
                 <p class="warning">
-                    {{ "Save any unsaved changes first — this rewrites the form and reloads the builder."|t('translator-pro') }}
+                    {{ "Save any unsaved changes first — this rewrites the form and reloads the builder."|t('translingua') }}
                 </p>
             </form>
 
             {# ---- What will be translated ---------------------------------- #}
-            <h3>{{ "What will be translated"|t('translator-pro') }}</h3>
+            <h3>{{ "What will be translated"|t('translingua') }}</h3>
 
             <table class="data fullwidth tp-table tp-compact">
                 <thead>
                     <tr>
-                        <th scope="col" class="tp-col-source">{{ "Where"|t('translator-pro') }}</th>
-                        <th scope="col" class="tp-col-translation">{{ "Current text"|t('translator-pro') }}</th>
+                        <th scope="col" class="tp-col-source">{{ "Where"|t('translingua') }}</th>
+                        <th scope="col" class="tp-col-translation">{{ "Current text"|t('translingua') }}</th>
                     </tr>
                 </thead>
                 <tbody>

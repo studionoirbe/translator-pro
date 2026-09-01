@@ -1,11 +1,11 @@
 <?php
 
-namespace studionoir\translatorpro\db;
+namespace studionoir\translingua\db;
 
 /**
- * Table names used by Translator Pro.
+ * Table names used by Translingua.
  */
 abstract class Table
 {
-    public const FORM_SETTINGS = '{{%translatorpro_formsettings}}';
+    public const FORM_SETTINGS = '{{%translingua_formsettings}}';
 }

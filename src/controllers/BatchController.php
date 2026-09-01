@@ -1,12 +1,12 @@
 <?php
 
-namespace studionoir\translatorpro\controllers;
+namespace studionoir\translingua\controllers;
 
 use Craft;
 use craft\helpers\StringHelper;
-use studionoir\translatorpro\jobs\TranslateElementsJob;
-use studionoir\translatorpro\services\Batch;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\jobs\TranslateElementsJob;
+use studionoir\translingua\services\Batch;
+use studionoir\translingua\Translingua;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
@@ -21,18 +21,18 @@ class BatchController extends BaseController
             return false;
         }
 
-        if (!TranslatorPro::$plugin->isPlus()) {
-            throw new ForbiddenHttpException(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
+        if (!Translingua::$plugin->isPlus()) {
+            throw new ForbiddenHttpException(Craft::t('translingua', 'AI translations require the Plus edition.'));
         }
 
-        $this->requirePermission(TranslatorPro::PERMISSION_AI);
+        $this->requirePermission(Translingua::PERMISSION_AI);
 
         return true;
     }
 
     public function actionIndex(): Response
     {
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
         $sites = Craft::$app->getSites()->getAllSites();
         $request = Craft::$app->getRequest();
 
@@ -49,8 +49,8 @@ class BatchController extends BaseController
         // after a cache flush without anyone having to press anything.
         $verified = $plugin->translator->verify();
 
-        return $this->renderTemplate('translator-pro/ai/index', [
-            'title' => Craft::t('translator-pro', 'AI translations'),
+        return $this->renderTemplate('translingua/ai/index', [
+            'title' => Craft::t('translingua', 'AI translations'),
             'elementType' => $elementType,
             'elementTypeOptions' => Batch::elementTypeOptions(),
             'sites' => $sites,
@@ -79,7 +79,7 @@ class BatchController extends BaseController
         $sourceSiteId = (int)$request->getParam('sourceSiteId', 0);
         $groupIds = array_filter(array_map('intval', (array)$request->getParam('groupIds', [])));
 
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
         $fields = [];
 
         foreach ($plugin->batch->getFields($elementType, $groupIds) as $field) {
@@ -106,7 +106,7 @@ class BatchController extends BaseController
         $this->requirePostRequest();
 
         $request = Craft::$app->getRequest();
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
 
         $elementType = (string)$request->getBodyParam('elementType', Batch::TYPE_ENTRIES);
         $groupIds = array_values(array_filter(array_map('intval', (array)$request->getBodyParam('groupIds', []))));
@@ -125,29 +125,29 @@ class BatchController extends BaseController
         $errors = [];
 
         if (!$plugin->getSettings()->isConfigured()) {
-            $errors[] = Craft::t('translator-pro', 'No API key is configured. Add one in the plugin settings first.');
+            $errors[] = Craft::t('translingua', 'No API key is configured. Add one in the plugin settings first.');
         } elseif (!$plugin->translator->verify()) {
-            $errors[] = Craft::t('translator-pro', 'The connection to the AI provider isn’t working: {message}', [
+            $errors[] = Craft::t('translingua', 'The connection to the AI provider isn’t working: {message}', [
                 'message' => $plugin->translator->getVerificationError() ?? '',
             ]);
         }
 
         if ($groupIds === []) {
-            $errors[] = Craft::t('translator-pro', 'Select at least one source to translate.');
+            $errors[] = Craft::t('translingua', 'Select at least one source to translate.');
         }
 
         if ($sourceSiteId === 0) {
-            $errors[] = Craft::t('translator-pro', 'Select the site to translate from.');
+            $errors[] = Craft::t('translingua', 'Select the site to translate from.');
         }
 
         $targetSiteIds = array_values(array_diff($targetSiteIds, [$sourceSiteId]));
 
         if ($targetSiteIds === []) {
-            $errors[] = Craft::t('translator-pro', 'Select at least one site to translate into.');
+            $errors[] = Craft::t('translingua', 'Select at least one site to translate into.');
         }
 
         if ($paths === []) {
-            $errors[] = Craft::t('translator-pro', 'Select at least one field to translate.');
+            $errors[] = Craft::t('translingua', 'Select at least one field to translate.');
         }
 
         if ($errors !== []) {
@@ -159,7 +159,7 @@ class BatchController extends BaseController
         $count = count($plugin->batch->getElementIds($elementType, $groupIds, $sourceSiteId));
 
         if ($count === 0) {
-            $this->setFailFlash(Craft::t('translator-pro', 'Nothing to translate — no elements matched that selection.'));
+            $this->setFailFlash(Craft::t('translingua', 'Nothing to translate — no elements matched that selection.'));
 
             return $this->redirectToPostedUrl();
         }
@@ -176,9 +176,9 @@ class BatchController extends BaseController
             'runId' => $runId,
         ]));
 
-        Craft::$app->getSession()->set('translator-pro.lastRunId', $runId);
+        Craft::$app->getSession()->set('translingua.lastRunId', $runId);
 
-        $this->setSuccessFlash(Craft::t('translator-pro', 'Queued {count} elements for translation into {sites} site(s).', [
+        $this->setSuccessFlash(Craft::t('translingua', 'Queued {count} elements for translation into {sites} site(s).', [
             'count' => $count,
             'sites' => count($targetSiteIds),
         ]));
@@ -193,13 +193,13 @@ class BatchController extends BaseController
      */
     private function lastRun(): ?array
     {
-        $runId = Craft::$app->getSession()->get('translator-pro.lastRunId');
+        $runId = Craft::$app->getSession()->get('translingua.lastRunId');
 
         if (!is_string($runId) || $runId === '') {
             return null;
         }
 
-        $summary = Craft::$app->getCache()->get('translator-pro:run:' . $runId);
+        $summary = Craft::$app->getCache()->get('translingua:run:' . $runId);
 
         return is_array($summary) ? $summary : null;
     }

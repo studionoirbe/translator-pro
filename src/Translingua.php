@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro;
+namespace studionoir\translingua;
 
 use Craft;
 use craft\base\Model;
@@ -14,20 +14,20 @@ use craft\services\UserPermissions;
 use craft\web\Application as WebApplication;
 use craft\web\UrlManager;
 use craft\web\View;
-use studionoir\translatorpro\assetbundles\cp\FieldTranslateAsset;
-use studionoir\translatorpro\models\Settings;
-use studionoir\translatorpro\services\Batch;
-use studionoir\translatorpro\services\Content;
-use studionoir\translatorpro\services\ElementTranslator;
-use studionoir\translatorpro\services\FormieBridge;
-use studionoir\translatorpro\services\Scanner;
-use studionoir\translatorpro\services\Sources;
-use studionoir\translatorpro\services\Translations;
-use studionoir\translatorpro\services\Translator;
+use studionoir\translingua\assetbundles\cp\FieldTranslateAsset;
+use studionoir\translingua\models\Settings;
+use studionoir\translingua\services\Batch;
+use studionoir\translingua\services\Content;
+use studionoir\translingua\services\ElementTranslator;
+use studionoir\translingua\services\FormieBridge;
+use studionoir\translingua\services\Scanner;
+use studionoir\translingua\services\Sources;
+use studionoir\translingua\services\Translations;
+use studionoir\translingua\services\Translator;
 use yii\base\Event;
 
 /**
- * Translator Pro
+ * Translingua
  *
  * Free (Lite) edition
  *  - Static template translations, Enupal-Translate style
@@ -53,15 +53,15 @@ use yii\base\Event;
  * @property-read Settings $settings
  * @method Settings getSettings()
  */
-class TranslatorPro extends Plugin
+class Translingua extends Plugin
 {
     public const EDITION_LITE = 'lite';
     public const EDITION_PLUS = 'plus';
 
-    public const PERMISSION_STATIC = 'translatorPro:manageStaticTranslations';
-    public const PERMISSION_AI = 'translatorPro:useAiTranslations';
+    public const PERMISSION_STATIC = 'translingua:manageStaticTranslations';
+    public const PERMISSION_AI = 'translingua:useAiTranslations';
 
-    public static ?TranslatorPro $plugin = null;
+    public static ?Translingua $plugin = null;
 
     public string $schemaVersion = '1.1.0';
     public bool $hasCpSettings = true;
@@ -73,8 +73,8 @@ class TranslatorPro extends Plugin
     public static function editions(): array
     {
         return [
-            self::EDITION_LITE,
             self::EDITION_PLUS,
+            self::EDITION_LITE,
         ];
     }
 
@@ -159,7 +159,7 @@ class TranslatorPro extends Plugin
     public function getSettingsResponse(): mixed
     {
         return Craft::$app->getResponse()->redirect(
-            \craft\helpers\UrlHelper::cpUrl('translator-pro/settings'),
+            \craft\helpers\UrlHelper::cpUrl('translingua/settings'),
         );
     }
 
@@ -179,22 +179,22 @@ class TranslatorPro extends Plugin
 
         if ($user?->can(self::PERMISSION_STATIC)) {
             $subNav['static'] = [
-                'label' => Craft::t('translator-pro', 'Static translations'),
-                'url' => 'translator-pro/static',
+                'label' => Craft::t('translingua', 'Static translations'),
+                'url' => 'translingua/static',
             ];
         }
 
         if ($this->canUseAi()) {
             $subNav['ai'] = [
-                'label' => Craft::t('translator-pro', 'AI translations'),
-                'url' => 'translator-pro/ai',
+                'label' => Craft::t('translingua', 'AI translations'),
+                'url' => 'translingua/ai',
             ];
         }
 
         if ($user?->admin) {
             $subNav['settings'] = [
-                'label' => Craft::t('translator-pro', 'Settings'),
-                'url' => 'translator-pro/settings',
+                'label' => Craft::t('translingua', 'Settings'),
+                'url' => 'translingua/settings',
             ];
         }
 
@@ -202,14 +202,14 @@ class TranslatorPro extends Plugin
             return null;
         }
 
-        $item['label'] = Craft::t('translator-pro', 'Translator Pro');
+        $item['label'] = Craft::t('translingua', 'Translingua');
         $item['subnav'] = $subNav;
 
         return $item;
     }
 
     /**
-     * Adds a Translator Pro tab to Formie's form builder.
+     * Adds a Translingua tab to Formie's form builder.
      *
      * Formie builds its tabs in a controller with no event to hook, and its
      * builder template resolves each pane as `formie/forms/_panes/{value}`.
@@ -269,9 +269,9 @@ class TranslatorPro extends Plugin
                 }
 
                 $tab = [
-                    'label' => Craft::t('translator-pro', 'Translator Pro'),
-                    'value' => 'translator-pro',
-                    'url' => '#tab-translator-pro',
+                    'label' => Craft::t('translingua', 'Translingua'),
+                    'value' => 'translingua',
+                    'url' => '#tab-translingua',
                 ];
 
                 // Formie reads both, and Craft nulls `tabs` when there's only one.
@@ -308,8 +308,8 @@ class TranslatorPro extends Plugin
                         // A Single holds one entry, so "entries in this section"
                         // would be describing something that doesn't exist.
                         $section?->type === \craft\models\Section::TYPE_SINGLE
-                            ? Craft::t('translator-pro', 'Make Translator Pro available for this section')
-                            : Craft::t('translator-pro', 'Make Translator Pro available for entries in this section'),
+                            ? Craft::t('translingua', 'Make Translingua available for this section')
+                            : Craft::t('translingua', 'Make Translingua available for entries in this section'),
                         '#enableVersioning-field',
                     );
                 } elseif ($event->template === 'settings/globals/_edit.twig') {
@@ -318,7 +318,7 @@ class TranslatorPro extends Plugin
                     $this->renderSourceToggle(
                         $set?->uid,
                         $set?->uid !== null && $this->getSettings()->allowsGlobalSet($set->uid),
-                        Craft::t('translator-pro', 'Make Translator Pro available for this global'),
+                        Craft::t('translingua', 'Make Translingua available for this global'),
                         '#handle-field',
                     );
                 } elseif ($event->template === 'settings/categories/_edit.twig') {
@@ -327,7 +327,7 @@ class TranslatorPro extends Plugin
                     $this->renderSourceToggle(
                         $group?->uid,
                         $group?->uid !== null && $this->getSettings()->allowsCategoryGroup($group->uid),
-                        Craft::t('translator-pro', 'Make Translator Pro available in this category group'),
+                        Craft::t('translingua', 'Make Translingua available in this category group'),
                         '#default-placement-field',
                     );
                 }
@@ -408,10 +408,10 @@ class TranslatorPro extends Plugin
         }
 
         $html = \craft\helpers\Cp::lightswitchFieldHtml([
-            'label' => Craft::t('translator-pro', 'Translator Pro'),
+            'label' => Craft::t('translingua', 'Translingua'),
             'instructions' => $instructions,
-            'id' => 'translatorProEnabled',
-            'name' => 'translatorProEnabled',
+            'id' => 'translinguaEnabled',
+            'name' => 'translinguaEnabled',
             'on' => $on,
         ]);
 
@@ -419,7 +419,7 @@ class TranslatorPro extends Plugin
 (function() {
     var form = document.querySelector('#main-form') || document.querySelector('form');
 
-    if (!form || form.querySelector('#translatorProEnabled')) {
+    if (!form || form.querySelector('#translinguaEnabled')) {
         return;
     }
 
@@ -501,7 +501,7 @@ JS;
             return;
         }
 
-        $posted = $request->getBodyParam('translatorProEnabled');
+        $posted = $request->getBodyParam('translinguaEnabled');
 
         if ($posted === null) {
             return;
@@ -526,18 +526,18 @@ JS;
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             static function(RegisterUrlRulesEvent $event) {
-                $event->rules['translator-pro'] = 'translator-pro/static/index';
+                $event->rules['translingua'] = 'translingua/static/index';
 
                 // Static translations
-                $event->rules['translator-pro/static'] = 'translator-pro/static/index';
-                $event->rules['translator-pro/static/<category:[\w\-\.]+>'] = 'translator-pro/static/edit';
+                $event->rules['translingua/static'] = 'translingua/static/index';
+                $event->rules['translingua/static/<category:[\w\-\.]+>'] = 'translingua/static/edit';
 
                 // AI translations (Pro)
-                $event->rules['translator-pro/ai'] = 'translator-pro/batch/index';
-                $event->rules['translator-pro/ai/new'] = 'translator-pro/batch/new';
+                $event->rules['translingua/ai'] = 'translingua/batch/index';
+                $event->rules['translingua/ai/new'] = 'translingua/batch/new';
 
                 // Settings
-                $event->rules['translator-pro/settings'] = 'translator-pro/settings/index';
+                $event->rules['translingua/settings'] = 'translingua/settings/index';
             },
         );
     }
@@ -549,13 +549,13 @@ JS;
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             static function(RegisterUserPermissionsEvent $event) {
                 $event->permissions[] = [
-                    'heading' => Craft::t('translator-pro', 'Translator Pro'),
+                    'heading' => Craft::t('translingua', 'Translingua'),
                     'permissions' => [
                         self::PERMISSION_STATIC => [
-                            'label' => Craft::t('translator-pro', 'Manage static translations'),
+                            'label' => Craft::t('translingua', 'Manage static translations'),
                         ],
                         self::PERMISSION_AI => [
-                            'label' => Craft::t('translator-pro', 'Use AI translations'),
+                            'label' => Craft::t('translingua', 'Use AI translations'),
                         ],
                     ],
                 ];
@@ -612,7 +612,7 @@ JS;
 
                 // Craft.t() only translates categories that have been handed to
                 // the JS side, and the plural below is formatted in the browser.
-                $view->registerTranslations('translator-pro', [
+                $view->registerTranslations('translingua', [
                     '{num, plural, =1{1 field translated} other{# fields translated}}',
                     'Translating into {language}',
                     'Translate into {target}, detecting the source language',
@@ -620,7 +620,7 @@ JS;
                 ]);
 
                 $view->registerJs(sprintf(
-                    'window.TranslatorPro && window.TranslatorPro.init(%s);',
+                    'window.Translingua && window.Translingua.init(%s);',
                     \craft\helpers\Json::encode($this->cpJsSettings()),
                 ), View::POS_END);
             },
@@ -628,7 +628,7 @@ JS;
     }
 
     /**
-     * Whether Translator Pro is switched on for the section or global set being
+     * Whether Translingua is switched on for the section or global set being
      * edited, from the toggle on its own settings screen.
      *
      * @param string[] $segments
@@ -745,7 +745,7 @@ JS;
         $sourceEnabled = $this->sourceIsEnabled($segments);
 
         return [
-            // The per-source toggle governs every Translator Pro feature on
+            // The per-source toggle governs every Translingua feature on
             // that section or global set, not just the page button.
             'enableFieldButtons' => $sourceEnabled && $settings->enableFieldButtons,
             // Translating a whole page only makes sense where the page *is* a
@@ -761,27 +761,27 @@ JS;
             'context' => $context,
             'targetLanguage' => $targetLanguage,
             // On a Formie form the buttons are limited to the same settings the
-            // Translator Pro tab touches, so the two can't disagree. Empty
+            // Translingua tab touches, so the two can't disagree. Empty
             // everywhere else, which means "no restriction".
             'attributeAllowlist' => str_starts_with($context, 'form:')
                 ? FormieBridge::translatableAttributes()
                 : [],
             'configured' => $settings->isConfigured(),
             'strings' => [
-                'translate' => Craft::t('translator-pro', 'Translate'),
-                'translatePage' => Craft::t('translator-pro', 'Translate page'),
-                'translateFrom' => Craft::t('translator-pro', 'Translate from'),
-                'autoDetect' => Craft::t('translator-pro', 'Detect automatically'),
-                'autoShort' => Craft::t('translator-pro', 'AUTO'),
-                'translatingInto' => Craft::t('translator-pro', 'Translating into {language}'),
-                'noTarget' => Craft::t('translator-pro', 'No language is set for this page.'),
-                'translating' => Craft::t('translator-pro', 'Translating…'),
-                'translated' => Craft::t('translator-pro', 'Translated'),
-                'nothingToTranslate' => Craft::t('translator-pro', 'Nothing to translate on this page.'),
-                'notConfigured' => Craft::t('translator-pro', 'No AI provider is configured yet.'),
-                'cancel' => Craft::t('translator-pro', 'Cancel'),
-                'failed' => Craft::t('translator-pro', 'Translation failed'),
-                'fieldsTranslated' => Craft::t('translator-pro', '{num, plural, =1{1 field translated} other{# fields translated}}'),
+                'translate' => Craft::t('translingua', 'Translate'),
+                'translatePage' => Craft::t('translingua', 'Translate page'),
+                'translateFrom' => Craft::t('translingua', 'Translate from'),
+                'autoDetect' => Craft::t('translingua', 'Detect automatically'),
+                'autoShort' => Craft::t('translingua', 'AUTO'),
+                'translatingInto' => Craft::t('translingua', 'Translating into {language}'),
+                'noTarget' => Craft::t('translingua', 'No language is set for this page.'),
+                'translating' => Craft::t('translingua', 'Translating…'),
+                'translated' => Craft::t('translingua', 'Translated'),
+                'nothingToTranslate' => Craft::t('translingua', 'Nothing to translate on this page.'),
+                'notConfigured' => Craft::t('translingua', 'No AI provider is configured yet.'),
+                'cancel' => Craft::t('translingua', 'Cancel'),
+                'failed' => Craft::t('translingua', 'Translation failed'),
+                'fieldsTranslated' => Craft::t('translingua', '{num, plural, =1{1 field translated} other{# fields translated}}'),
             ],
         ];
     }

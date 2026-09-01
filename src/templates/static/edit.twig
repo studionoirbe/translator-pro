@@ -4,16 +4,16 @@
 {% set selectedSubnavItem = 'static' %}
 {% set title = source.name %}
 {% set crumbs = [
-    { label: "Static translations"|t('translator-pro'), url: url('translator-pro/static') },
+    { label: "Static translations"|t('translingua'), url: url('translingua/static') },
 ] %}
 
-{% set baseUrl = url('translator-pro/static/' ~ source.category) %}
-{% set currentUrl = 'translator-pro/static/' ~ source.category ~ '?locale=' ~ locale ~ '&filter=' ~ filter ~ '&search=' ~ search|url_encode ~ '&page=' ~ page %}
+{% set baseUrl = url('translingua/static/' ~ source.category) %}
+{% set currentUrl = 'translingua/static/' ~ source.category ~ '?locale=' ~ locale ~ '&filter=' ~ filter ~ '&search=' ~ search|url_encode ~ '&page=' ~ page %}
 
 {% block content %}
     <form method="get" action="{{ baseUrl }}" class="tp-toolbar">
         {{ forms.selectField({
-            label: "Language"|t('translator-pro'),
+            label: "Language"|t('translingua'),
             name: 'locale',
             options: locales,
             value: locale,
@@ -21,12 +21,12 @@
         }) }}
 
         {{ forms.selectField({
-            label: "Show"|t('translator-pro'),
+            label: "Show"|t('translingua'),
             name: 'filter',
             options: {
-                all: "All"|t('translator-pro'),
-                missing: "Missing only"|t('translator-pro'),
-                translated: "Translated only"|t('translator-pro'),
+                all: "All"|t('translingua'),
+                missing: "Missing only"|t('translingua'),
+                translated: "Translated only"|t('translingua'),
             },
             value: filter,
             inputAttributes: { onchange: 'this.form.submit()' },
@@ -36,7 +36,7 @@
            the box rather than floating in a column of its own. #}
         <div class="field tp-search-field">
             <div class="heading">
-                <label for="tp-search">{{ "Search"|t('translator-pro') }}</label>
+                <label for="tp-search">{{ "Search"|t('translingua') }}</label>
             </div>
             <div class="input tp-search-input">
                 <input
@@ -45,15 +45,15 @@
                     class="text fullwidth"
                     name="search"
                     value="{{ search }}"
-                    placeholder="{{ "Source or translation"|t('translator-pro') }}"
+                    placeholder="{{ "Source or translation"|t('translingua') }}"
                 >
-                <button type="submit" class="btn">{{ "Search"|t('translator-pro') }}</button>
+                <button type="submit" class="btn">{{ "Search"|t('translingua') }}</button>
             </div>
     </div>
     </form>
 
     <p class="light">
-        {{ "{total} strings shown · {missing} missing in {locale} · saved to"|t('translator-pro', {
+        {{ "{total} strings shown · {missing} missing in {locale} · saved to"|t('translingua', {
             total: total,
             missing: missingCount,
             locale: locale,
@@ -64,25 +64,25 @@
     {% if canUseAi and missingCount > 0 %}
         <form method="post" accept-charset="UTF-8" style="margin-bottom: 18px;">
             {{ csrfInput() }}
-            {{ actionInput('translator-pro/static/translate-missing') }}
+            {{ actionInput('translingua/static/translate-missing') }}
             {{ redirectInput(currentUrl) }}
             {{ hiddenInput('category', source.category) }}
             {{ hiddenInput('locale', locale) }}
             <button type="submit" class="btn submit">
-                {{ "Translate {n} missing strings with AI"|t('translator-pro', { n: missingCount }) }}
+                {{ "Translate {n} missing strings with AI"|t('translingua', { n: missingCount }) }}
             </button>
         </form>
     {% endif %}
 
     <form method="post" accept-charset="UTF-8" data-saveshortcut>
         {{ csrfInput() }}
-        {{ actionInput('translator-pro/static/save') }}
+        {{ actionInput('translingua/static/save') }}
         {{ redirectInput(currentUrl) }}
         {{ hiddenInput('category', source.category) }}
         {{ hiddenInput('locale', locale) }}
 
         <p class="light smalltext" style="margin-bottom: 8px;">
-            {{ "Fields already holding a translation shipped with this source are marked “default”. Edit one to override it for this project; only what you change is written to the translation file."|t('translator-pro') }}
+            {{ "Fields already holding a translation shipped with this source are marked “default”. Edit one to override it for this project; only what you change is written to the translation file."|t('translingua') }}
         </p>
 
         {# Captured once, rendered above and below the table: on a 50-row page the
@@ -91,29 +91,29 @@
         {% set actionsBar %}
             <div class="tp-actions">
                 {% if totalPages > 1 %}
-                    <nav class="tp-pagination" aria-label="{{ "Pagination"|t('translator-pro') }}">
+                    <nav class="tp-pagination" aria-label="{{ "Pagination"|t('translingua') }}">
                         <a
                             class="btn{% if page <= 1 %} disabled{% endif %}"
                             {% if page > 1 %}href="{{ pageUrl ~ (page - 1) }}"{% else %}aria-disabled="true"{% endif %}
-                        >{{ "Previous"|t('translator-pro') }}</a>
+                        >{{ "Previous"|t('translingua') }}</a>
 
-                        <span class="light">{{ "Page {page} of {total}"|t('translator-pro', { page: page, total: totalPages }) }}</span>
+                        <span class="light">{{ "Page {page} of {total}"|t('translingua', { page: page, total: totalPages }) }}</span>
 
                         <a
                             class="btn{% if page >= totalPages %} disabled{% endif %}"
                             {% if page < totalPages %}href="{{ pageUrl ~ (page + 1) }}"{% else %}aria-disabled="true"{% endif %}
-                        >{{ "Next"|t('translator-pro') }}</a>
+                        >{{ "Next"|t('translingua') }}</a>
                     </nav>
                 {% else %}
                     <span></span>
                 {% endif %}
 
-                <button type="submit" class="btn submit">{{ "Save"|t('translator-pro') }}</button>
+                <button type="submit" class="btn submit">{{ "Save"|t('translingua') }}</button>
             </div>
         {% endset %}
 
         {% if rows is empty %}
-            <p>{{ "No strings match that filter."|t('translator-pro') }}</p>
+            <p>{{ "No strings match that filter."|t('translingua') }}</p>
         {% else %}
             {{ actionsBar|raw }}
 
@@ -126,7 +126,7 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th scope="col" class="tp-col-source">{{ "Source string"|t('translator-pro') }}</th>
+                        <th scope="col" class="tp-col-source">{{ "Source string"|t('translingua') }}</th>
                         <th scope="col" class="tp-col-translation">{{ locales[locale] }}</th>
                     </tr>
                 </thead>
@@ -139,12 +139,12 @@
                                source string's own leading and trailing spaces. #}
                             <td class="tp-source-string">
                                 {%- if row.source matches '/^\\s|\\s$/' -%}
-                                    <code class="tp-whitespace" title="{{ "This string begins or ends with a space"|t('translator-pro') }}">{{- row.source -}}</code>
+                                    <code class="tp-whitespace" title="{{ "This string begins or ends with a space"|t('translingua') }}">{{- row.source -}}</code>
                                 {%- else -%}
                                     <code>{{- row.source -}}</code>
                                 {%- endif -%}
                                 {%- if row.source != row.key %}
-                                    <div class="light smalltext">{{ "Key"|t('translator-pro') }}: {{ row.key }}</div>
+                                    <div class="light smalltext">{{ "Key"|t('translingua') }}: {{ row.key }}</div>
                                 {% endif -%}
                             </td>
                             <td class="tp-translation-cell">
@@ -155,13 +155,13 @@
                                                 type="button"
                                                 class="delete icon js-tp-delete"
                                                 title="{{ row.shipped
-                                                    ? "Reset to the translation this plugin ships"|t('translator-pro')
-                                                    : "Delete this translation"|t('translator-pro') }}"
+                                                    ? "Reset to the translation this plugin ships"|t('translingua')
+                                                    : "Delete this translation"|t('translingua') }}"
                                                 data-key="{{ row.key }}"
                                             ></button>
                                         {%- elseif row.translation -%}
-                                            <span class="tp-badge" title="{{ "Shipped with the source. Edit it to create a project override."|t('translator-pro') }}">
-                                                {{- "default"|t('translator-pro') -}}
+                                            <span class="tp-badge" title="{{ "Shipped with the source. Edit it to create a project override."|t('translingua') }}">
+                                                {{- "default"|t('translingua') -}}
                                             </span>
                                         {%- endif -%}
                                     </span>
@@ -169,7 +169,7 @@
                                         class="text tp-translation-input{% if not row.isOverridden and row.translation %} tp-inherited{% endif %}"
                                         rows="1"
                                         name="translations[{{ encodedKey }}]"
-                                        data-translator-pro-skip
+                                        data-translingua-skip
                                         dir="{{ locale starts with 'ar' or locale starts with 'he' ? 'rtl' : 'ltr' }}"
                                     >{{ row.translation }}</textarea>
                                 </div>
@@ -185,32 +185,32 @@
 
     <hr>
 
-    <h2>{{ "Add a translation"|t('translator-pro') }}</h2>
+    <h2>{{ "Add a translation"|t('translingua') }}</h2>
     <p class="light">
-        {{ "Add a string that isn’t in the source files yet — handy for copy you’re about to write, or a plugin string Craft hasn’t emitted."|t('translator-pro') }}
+        {{ "Add a string that isn’t in the source files yet — handy for copy you’re about to write, or a plugin string Craft hasn’t emitted."|t('translingua') }}
     </p>
 
     <form method="post" accept-charset="UTF-8">
         {{ csrfInput() }}
-        {{ actionInput('translator-pro/static/add-string') }}
+        {{ actionInput('translingua/static/add-string') }}
         {{ redirectInput(currentUrl) }}
         {{ hiddenInput('category', source.category) }}
         {{ hiddenInput('locale', locale) }}
 
         {{ forms.textField({
-            label: "Source string"|t('translator-pro'),
-            instructions: "Exactly what is passed to |t or Craft::t()."|t('translator-pro'),
+            label: "Source string"|t('translingua'),
+            instructions: "Exactly what is passed to |t or Craft::t()."|t('translingua'),
             name: 'key',
             required: true,
         }) }}
 
         {{ forms.textField({
-            label: "Translation"|t('translator-pro') ~ ' (' ~ locale ~ ')',
+            label: "Translation"|t('translingua') ~ ' (' ~ locale ~ ')',
             name: 'value',
         }) }}
 
         <div class="buttons">
-            <button type="submit" class="btn submit">{{ "Add"|t('translator-pro') }}</button>
+            <button type="submit" class="btn submit">{{ "Add"|t('translingua') }}</button>
         </div>
     </form>
 {% endblock %}
@@ -218,20 +218,20 @@
 {% js %}
 document.querySelectorAll('.js-tp-delete').forEach(function (button) {
     button.addEventListener('click', function () {
-        if (!confirm({{ "Delete this translation in every language?"|t('translator-pro')|json_encode|raw }})) {
+        if (!confirm({{ "Delete this translation in every language?"|t('translingua')|json_encode|raw }})) {
             return;
         }
 
-        Craft.sendActionRequest('POST', 'translator-pro/static/delete-string', {
+        Craft.sendActionRequest('POST', 'translingua/static/delete-string', {
             data: {
                 category: {{ source.category|json_encode|raw }},
                 key: button.dataset.key
             }
         }).then(function () {
             button.closest('tr').remove();
-            Craft.cp.displayNotice({{ "String deleted."|t('translator-pro')|json_encode|raw }});
+            Craft.cp.displayNotice({{ "String deleted."|t('translingua')|json_encode|raw }});
         }).catch(function () {
-            Craft.cp.displayError({{ "Couldn’t delete that string."|t('translator-pro')|json_encode|raw }});
+            Craft.cp.displayError({{ "Couldn’t delete that string."|t('translingua')|json_encode|raw }});
         });
     });
 });

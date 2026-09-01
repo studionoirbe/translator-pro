@@ -1,5 +1,5 @@
 /**
- * Translator Pro — control panel field translation.
+ * Translingua — control panel field translation.
  *
  * Works entirely against the DOM rather than against Craft's field classes.
  * That's deliberate: it's why the buttons show up inside Formie, SEOmatic and
@@ -10,14 +10,14 @@
 (function () {
     'use strict';
 
-    var SOURCE_KEY = 'translatorPro.sourceLanguage';
-    var MARK = 'translatorProAttached';
+    var SOURCE_KEY = 'translingua.sourceLanguage';
+    var MARK = 'translinguaAttached';
 
     // Matched on the exact input name, not as a substring, so a custom field
     // handled `notesField` is unaffected.
     var CP_METADATA_INPUTS = ['notes'];
 
-    var TranslatorPro = {
+    var Translingua = {
         settings: null,
         booted: false,
         pageMenu: null,
@@ -124,7 +124,7 @@
                 return false;
             }
 
-            if (el.closest('[data-translator-pro-skip], .tp-no-translate, #global-sidebar, #global-header, .modal-shade')) {
+            if (el.closest('[data-translingua-skip], .tp-no-translate, #global-sidebar, #global-header, .modal-shade')) {
                 return false;
             }
 
@@ -442,12 +442,12 @@
             var targetName = this.languageName(target) + ' (' + target + ')';
 
             if (!source) {
-                return Craft.t('translator-pro', 'Translate into {target}, detecting the source language', {
+                return Craft.t('translingua', 'Translate into {target}, detecting the source language', {
                     target: targetName,
                 });
             }
 
-            return Craft.t('translator-pro', 'Translate from {source} into {target}', {
+            return Craft.t('translingua', 'Translate from {source} into {target}', {
                 source: this.languageName(source) + ' (' + source + ')',
                 target: targetName,
             });
@@ -794,7 +794,7 @@
          *
          * There's no "translate into" picker: the target is always the site
          * you're editing (or, for a Formie form, the language set on its
-         * Translator Pro tab). Picking it by hand only ever produced content in
+         * Translingua tab). Picking it by hand only ever produced content in
          * the wrong site. The source is detected by the provider unless you
          * override it.
          */
@@ -822,7 +822,7 @@
                 return this.settings.strings.noTarget;
             }
 
-            return Craft.t('translator-pro', 'Translating into {language}', {
+            return Craft.t('translingua', 'Translating into {language}', {
                 language: this.languageName(target) + ' (' + target + ')',
             });
         },
@@ -1013,7 +1013,7 @@
 
             this.setBusy(button, true);
 
-            Craft.sendActionRequest('POST', 'translator-pro/ai/translate', {
+            Craft.sendActionRequest('POST', 'translingua/ai/translate', {
                 data: {
                     items: items,
                     // Omitted when null, so the provider auto-detects.
@@ -1044,7 +1044,7 @@
                 if (count) {
                     self.notice(
                         isPage
-                            ? Craft.t('translator-pro', '{num, plural, =1{1 field translated} other{# fields translated}}', {num: count})
+                            ? Craft.t('translingua', '{num, plural, =1{1 field translated} other{# fields translated}}', {num: count})
                             : self.settings.strings.translated,
                         'notice'
                     );
@@ -1127,5 +1127,5 @@
         }
     };
 
-    window.TranslatorPro = TranslatorPro;
+    window.Translingua = Translingua;
 })();

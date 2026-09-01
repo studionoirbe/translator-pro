@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\translators;
+namespace studionoir\translingua\translators;
 
 use Craft;
 
@@ -67,7 +67,7 @@ class Google extends BaseTranslator
         }
 
         if (trim($content) === '') {
-            throw new TranslatorException(Craft::t('translator-pro', 'Google Gemini returned an empty response.'));
+            throw new TranslatorException(Craft::t('translingua', 'Google Gemini returned an empty response.'));
         }
 
         return $this->parseLlmResponse($content, $texts);

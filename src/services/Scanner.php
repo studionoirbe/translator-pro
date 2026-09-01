@@ -1,11 +1,11 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
 use craft\helpers\FileHelper;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\Translingua;
 
 /**
  * Finds translatable strings by scanning the project's templates, modules and
@@ -16,7 +16,7 @@ use studionoir\translatorpro\TranslatorPro;
  */
 class Scanner extends Component
 {
-    private const CACHE_KEY = 'translator-pro:scan';
+    private const CACHE_KEY = 'translingua:scan';
 
     /**
      * @var array<string,array<string,string>>|null category => [string => string]
@@ -75,7 +75,7 @@ class Scanner extends Component
      */
     public function getScanPaths(): array
     {
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
 
         $paths = [
             Craft::$app->getPath()->getSiteTemplatesPath(),
@@ -98,7 +98,7 @@ class Scanner extends Component
      */
     private function collectFiles(): array
     {
-        $extensions = TranslatorPro::$plugin->getSettings()->scanExtensions;
+        $extensions = Translingua::$plugin->getSettings()->scanExtensions;
         $files = [];
 
         foreach ($this->getScanPaths() as $path) {

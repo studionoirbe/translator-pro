@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
@@ -9,8 +9,8 @@ use craft\elements\Category;
 use craft\elements\Entry;
 use craft\elements\GlobalSet;
 use craft\models\FieldLayout;
-use studionoir\translatorpro\models\TranslatableField;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\TranslatableField;
+use studionoir\translingua\Translingua;
 
 /**
  * Builds the batch translation screen: what can be translated, which fields it
@@ -55,7 +55,7 @@ class Batch extends Component
     public function getGroups(string $type, ?int $siteId = null): array
     {
         $groups = [];
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
 
         switch ($type) {
             case self::TYPE_CATEGORIES:
@@ -155,7 +155,7 @@ class Batch extends Component
                 }
         }
 
-        return TranslatorPro::$plugin->content->getTranslatableFieldsForLayouts(
+        return Translingua::$plugin->content->getTranslatableFieldsForLayouts(
             $this->uniqueLayouts($layouts),
             $includeTitle,
             $titleTranslatable,

@@ -1,12 +1,12 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
 use craft\helpers\FileHelper;
-use studionoir\translatorpro\models\TranslationSource;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\TranslationSource;
+use studionoir\translingua\Translingua;
 use yii\base\Exception;
 
 /**
@@ -84,7 +84,7 @@ class Translations extends Component
         }
 
         if ($source->isScanned()) {
-            $strings = TranslatorPro::$plugin->scanner->getStrings();
+            $strings = Translingua::$plugin->scanner->getStrings();
         } else {
             $file = sprintf(
                 '%s%s%s%s%s.php',
@@ -349,7 +349,7 @@ class Translations extends Component
             '/**',
             ' * ' . $source->name . ' — ' . $locale,
             ' *',
-            ' * Managed by Translator Pro. Overrides the `' . $source->category . '` translation category.',
+            ' * Managed by Translingua. Overrides the `' . $source->category . '` translation category.',
             ' * Hand edits are preserved, but keys are re-sorted whenever this file is saved.',
             ' */',
             '',

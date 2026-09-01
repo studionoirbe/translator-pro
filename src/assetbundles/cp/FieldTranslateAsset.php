@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\assetbundles\cp;
+namespace studionoir\translingua\assetbundles\cp;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
@@ -22,7 +22,7 @@ class FieldTranslateAsset extends AssetBundle
         ];
 
         $this->js = [
-            'translator-pro.js',
+            'translingua.js',
         ];
 
         parent::init();

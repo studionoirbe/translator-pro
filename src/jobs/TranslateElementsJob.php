@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\jobs;
+namespace studionoir\translingua\jobs;
 
 use Craft;
 use craft\base\Batchable;
@@ -10,8 +10,8 @@ use craft\elements\Category;
 use craft\elements\Entry;
 use craft\elements\GlobalSet;
 use craft\queue\BaseBatchedElementJob;
-use studionoir\translatorpro\services\Batch;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\services\Batch;
+use studionoir\translingua\Translingua;
 
 /**
  * Translates a set of elements from one site into one or more others.
@@ -60,8 +60,8 @@ class TranslateElementsJob extends BaseBatchedElementJob
             return;
         }
 
-        $service = TranslatorPro::$plugin->elementTranslator;
-        $elementClass = TranslatorPro::$plugin->batch->elementClass($this->elementType);
+        $service = Translingua::$plugin->elementTranslator;
+        $elementClass = Translingua::$plugin->batch->elementClass($this->elementType);
 
         foreach ($this->targetSiteIds as $targetSiteId) {
             $targetSiteId = (int)$targetSiteId;
@@ -82,7 +82,7 @@ class TranslateElementsJob extends BaseBatchedElementJob
             $this->recordSummary($result->toArray());
 
             foreach ($result->errors as $error) {
-                Craft::warning("Translator Pro: $error", __METHOD__);
+                Craft::warning("Translingua: $error", __METHOD__);
             }
         }
     }
@@ -91,7 +91,7 @@ class TranslateElementsJob extends BaseBatchedElementJob
     {
         $sourceSite = Craft::$app->getSites()->getSiteById($this->sourceSiteId);
 
-        return Craft::t('translator-pro', 'Translating {type} from {site}', [
+        return Craft::t('translingua', 'Translating {type} from {site}', [
             'type' => mb_strtolower(Batch::elementTypeOptions()[$this->elementType] ?? $this->elementType),
             'site' => $sourceSite?->name ?? $this->sourceSiteId,
         ]);
@@ -130,7 +130,7 @@ class TranslateElementsJob extends BaseBatchedElementJob
         }
 
         $cache = Craft::$app->getCache();
-        $key = 'translator-pro:run:' . $this->runId;
+        $key = 'translingua:run:' . $this->runId;
         $summary = $cache->get($key);
 
         if (!is_array($summary)) {

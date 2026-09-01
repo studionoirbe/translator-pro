@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\models;
+namespace studionoir\translingua\models;
 
 use Craft;
 use craft\base\Model;
@@ -61,7 +61,7 @@ class TranslationSource extends Model
 
     public function getCpEditUrl(): string
     {
-        return UrlHelper::cpUrl('translator-pro/static/' . $this->category);
+        return UrlHelper::cpUrl('translingua/static/' . $this->category);
     }
 
     /**

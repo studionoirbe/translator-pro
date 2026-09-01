@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\assetbundles\cp;
+namespace studionoir\translingua\assetbundles\cp;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
@@ -23,7 +23,7 @@ class StylesAsset extends AssetBundle
         ];
 
         $this->css = [
-            'translator-pro.css',
+            'translingua.css',
         ];
 
         parent::init();

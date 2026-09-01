@@ -1,11 +1,11 @@
 <?php
 
-namespace studionoir\translatorpro\console\controllers;
+namespace studionoir\translingua\console\controllers;
 
 use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\Translingua;
 use yii\console\ExitCode;
 
 /**
@@ -24,8 +24,8 @@ class LicenseController extends Controller
      */
     public function actionEdition(): int
     {
-        $this->stdout('Translator Pro edition: ', Console::FG_GREY);
-        $this->stdout(TranslatorPro::$plugin->edition . PHP_EOL, Console::FG_GREEN);
+        $this->stdout('Translingua edition: ', Console::FG_GREY);
+        $this->stdout(Translingua::$plugin->edition . PHP_EOL, Console::FG_GREEN);
 
         return ExitCode::OK;
     }
@@ -37,7 +37,7 @@ class LicenseController extends Controller
      */
     public function actionSetEdition(string $edition): int
     {
-        $editions = TranslatorPro::editions();
+        $editions = Translingua::editions();
 
         if (!in_array($edition, $editions, true)) {
             $this->stderr(sprintf(
@@ -50,14 +50,14 @@ class LicenseController extends Controller
         }
 
         try {
-            Craft::$app->getPlugins()->switchEdition(TranslatorPro::$plugin->id, $edition);
+            Craft::$app->getPlugins()->switchEdition(Translingua::$plugin->id, $edition);
         } catch (\Throwable $e) {
             $this->stderr("Couldn't switch edition: {$e->getMessage()}" . PHP_EOL, Console::FG_RED);
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $this->stdout("Translator Pro is now on the $edition edition." . PHP_EOL, Console::FG_GREEN);
+        $this->stdout("Translingua is now on the $edition edition." . PHP_EOL, Console::FG_GREEN);
 
         return ExitCode::OK;
     }

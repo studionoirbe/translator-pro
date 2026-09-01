@@ -1,9 +1,9 @@
 <?php
 
-namespace studionoir\translatorpro\migrations;
+namespace studionoir\translingua\migrations;
 
 use craft\db\Migration;
-use studionoir\translatorpro\db\Table;
+use studionoir\translingua\db\Table;
 
 class Install extends Migration
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\translators;
+namespace studionoir\translingua\translators;
 
 use Craft;
 
@@ -55,7 +55,7 @@ class OpenAi extends BaseTranslator
         $content = $response['choices'][0]['message']['content'] ?? null;
 
         if (!is_string($content)) {
-            throw new TranslatorException(Craft::t('translator-pro', 'OpenAI returned an empty response.'));
+            throw new TranslatorException(Craft::t('translingua', 'OpenAI returned an empty response.'));
         }
 
         return $this->parseLlmResponse($content, $texts);

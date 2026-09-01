@@ -1,6 +1,6 @@
 <?php
 
-namespace studionoir\translatorpro\translators;
+namespace studionoir\translingua\translators;
 
 /**
  * Contract every AI/machine translation provider implements.

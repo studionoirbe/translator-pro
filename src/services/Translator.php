@@ -1,17 +1,17 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
-use studionoir\translatorpro\models\Settings;
-use studionoir\translatorpro\translators\Anthropic;
-use studionoir\translatorpro\translators\DeepL;
-use studionoir\translatorpro\translators\Google;
-use studionoir\translatorpro\translators\OpenAi;
-use studionoir\translatorpro\translators\TranslatorException;
-use studionoir\translatorpro\translators\TranslatorInterface;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\Settings;
+use studionoir\translingua\translators\Anthropic;
+use studionoir\translingua\translators\DeepL;
+use studionoir\translingua\translators\Google;
+use studionoir\translingua\translators\OpenAi;
+use studionoir\translingua\translators\TranslatorException;
+use studionoir\translingua\translators\TranslatorInterface;
+use studionoir\translingua\Translingua;
 
 /**
  * The entry point for every AI translation in the plugin.
@@ -48,11 +48,11 @@ class Translator extends Component
 
         $this->requirePlus();
 
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
         $class = self::PROVIDERS[$settings->provider] ?? null;
 
         if ($class === null) {
-            throw new TranslatorException(Craft::t('translator-pro', 'Unknown translation provider “{provider}”.', [
+            throw new TranslatorException(Craft::t('translingua', 'Unknown translation provider “{provider}”.', [
                 'provider' => $settings->provider,
             ]));
         }
@@ -69,7 +69,7 @@ class Translator extends Component
         $class = self::PROVIDERS[$settings->provider] ?? null;
 
         if ($class === null) {
-            throw new TranslatorException(Craft::t('translator-pro', 'Unknown translation provider “{provider}”.', [
+            throw new TranslatorException(Craft::t('translingua', 'Unknown translation provider “{provider}”.', [
                 'provider' => $settings->provider,
             ]));
         }
@@ -91,7 +91,7 @@ class Translator extends Component
         }
 
         $provider = $this->getProvider();
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
         $cache = Craft::$app->getCache();
 
         $results = [];
@@ -166,9 +166,9 @@ class Translator extends Component
      */
     public function isVerified(): bool
     {
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
 
-        if (!TranslatorPro::$plugin->isPlus() || !$settings->isConfigured()) {
+        if (!Translingua::$plugin->isPlus() || !$settings->isConfigured()) {
             return false;
         }
 
@@ -180,7 +180,7 @@ class Translator extends Component
      */
     public function getVerificationError(): ?string
     {
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
         $error = Craft::$app->getCache()->get($this->failedKey($settings->credentialsFingerprint()));
 
         return is_string($error) ? $error : null;
@@ -194,9 +194,9 @@ class Translator extends Component
      */
     public function verify(bool $force = false, ?Settings $settings = null): bool
     {
-        $settings ??= TranslatorPro::$plugin->getSettings();
+        $settings ??= Translingua::$plugin->getSettings();
 
-        if (!TranslatorPro::$plugin->isPlus() || !$settings->isConfigured()) {
+        if (!Translingua::$plugin->isPlus() || !$settings->isConfigured()) {
             return false;
         }
 
@@ -229,7 +229,7 @@ class Translator extends Component
             $cache->delete($this->verifiedKey($fingerprint));
             $cache->set(
                 $this->failedKey($fingerprint),
-                Craft::t('translator-pro', 'The connection test didn’t succeed.'),
+                Craft::t('translingua', 'The connection test didn’t succeed.'),
                 self::FAILURE_DURATION,
             );
 
@@ -247,7 +247,7 @@ class Translator extends Component
      */
     public function forgetVerification(?Settings $settings = null): void
     {
-        $settings ??= TranslatorPro::$plugin->getSettings();
+        $settings ??= Translingua::$plugin->getSettings();
         $fingerprint = $settings->credentialsFingerprint();
 
         Craft::$app->getCache()->delete($this->verifiedKey($fingerprint));
@@ -256,12 +256,12 @@ class Translator extends Component
 
     private function verifiedKey(string $fingerprint): string
     {
-        return 'translator-pro:verified:' . $fingerprint;
+        return 'translingua:verified:' . $fingerprint;
     }
 
     private function failedKey(string $fingerprint): string
     {
-        return 'translator-pro:unverified:' . $fingerprint;
+        return 'translingua:unverified:' . $fingerprint;
     }
 
     /**
@@ -277,19 +277,19 @@ class Translator extends Component
      */
     private function requirePlus(): void
     {
-        if (!TranslatorPro::$plugin->isPlus()) {
+        if (!Translingua::$plugin->isPlus()) {
             throw new TranslatorException(Craft::t(
-                'translator-pro',
-                'AI translations require the Plus edition of Translator Pro.',
+                'translingua',
+                'AI translations require the Plus edition of Translingua.',
             ));
         }
     }
 
     private function cacheKey(string $text, ?string $source, string $target, string $format): string
     {
-        $settings = TranslatorPro::$plugin->getSettings();
+        $settings = Translingua::$plugin->getSettings();
 
-        return 'translator-pro:t:' . md5(implode('|', [
+        return 'translingua:t:' . md5(implode('|', [
             $settings->provider,
             $settings->model,
             $source ?? 'auto',

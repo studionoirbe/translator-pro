@@ -1,10 +1,10 @@
 <?php
 
-namespace studionoir\translatorpro\controllers;
+namespace studionoir\translingua\controllers;
 
 use Craft;
-use studionoir\translatorpro\translators\TranslatorException;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\translators\TranslatorException;
+use studionoir\translingua\Translingua;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
@@ -22,7 +22,7 @@ class StaticController extends BaseController
             return false;
         }
 
-        $this->requirePermission(TranslatorPro::PERMISSION_STATIC);
+        $this->requirePermission(Translingua::PERMISSION_STATIC);
 
         return true;
     }
@@ -32,10 +32,10 @@ class StaticController extends BaseController
      */
     public function actionIndex(): Response
     {
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
 
-        return $this->renderTemplate('translator-pro/static/index', [
-            'title' => Craft::t('translator-pro', 'Static translations'),
+        return $this->renderTemplate('translingua/static/index', [
+            'title' => Craft::t('translingua', 'Static translations'),
             'sources' => $plugin->sources->getAll(),
             'locales' => $plugin->translations->getTargetLocaleOptions(),
             'translations' => $plugin->translations,
@@ -48,7 +48,7 @@ class StaticController extends BaseController
      */
     public function actionEdit(string $category): Response
     {
-        $plugin = TranslatorPro::$plugin;
+        $plugin = Translingua::$plugin;
         $source = $plugin->sources->getByCategory($category);
 
         if ($source === null) {
@@ -107,7 +107,7 @@ class StaticController extends BaseController
         $page = min($page, $totalPages);
         $rows = array_slice($rows, ($page - 1) * self::PER_PAGE, self::PER_PAGE);
 
-        return $this->renderTemplate('translator-pro/static/edit', [
+        return $this->renderTemplate('translingua/static/edit', [
             'title' => $source->name,
             'source' => $source,
             'locale' => $locale,
@@ -133,7 +133,7 @@ class StaticController extends BaseController
         $request = Craft::$app->getRequest();
         $category = (string)$request->getRequiredBodyParam('category');
         $locale = (string)$request->getRequiredBodyParam('locale');
-        $source = TranslatorPro::$plugin->sources->getByCategory($category);
+        $source = Translingua::$plugin->sources->getByCategory($category);
 
         if ($source === null) {
             throw new NotFoundHttpException("No translation source found for “$category”.");
@@ -151,17 +151,17 @@ class StaticController extends BaseController
         }
 
         try {
-            TranslatorPro::$plugin->translations->saveOverrides($source, $locale, $clean);
+            Translingua::$plugin->translations->saveOverrides($source, $locale, $clean);
         } catch (\Throwable $e) {
             Craft::error("Couldn't save translations: {$e->getMessage()}", __METHOD__);
-            $this->setFailFlash(Craft::t('translator-pro', 'Couldn’t save translations: {message}', [
+            $this->setFailFlash(Craft::t('translingua', 'Couldn’t save translations: {message}', [
                 'message' => $e->getMessage(),
             ]));
 
             return null;
         }
 
-        $this->setSuccessFlash(Craft::t('translator-pro', 'Translations saved.'));
+        $this->setSuccessFlash(Craft::t('translingua', 'Translations saved.'));
 
         return $this->redirectToPostedUrl();
     }
@@ -180,24 +180,24 @@ class StaticController extends BaseController
         $key = trim((string)$request->getRequiredBodyParam('key'));
         $value = (string)$request->getBodyParam('value', '');
 
-        $source = TranslatorPro::$plugin->sources->getByCategory($category);
+        $source = Translingua::$plugin->sources->getByCategory($category);
 
         if ($source === null) {
             throw new NotFoundHttpException("No translation source found for “$category”.");
         }
 
         if ($key === '') {
-            $this->setFailFlash(Craft::t('translator-pro', 'A source string is required.'));
+            $this->setFailFlash(Craft::t('translingua', 'A source string is required.'));
             return null;
         }
 
         // Storing the key as its own translation keeps it visible in the table
         // even when the editor hasn't supplied a translation yet.
-        TranslatorPro::$plugin->translations->saveOverrides($source, $locale, [
+        Translingua::$plugin->translations->saveOverrides($source, $locale, [
             $key => $value !== '' ? $value : $key,
         ]);
 
-        $this->setSuccessFlash(Craft::t('translator-pro', 'String added.'));
+        $this->setSuccessFlash(Craft::t('translingua', 'String added.'));
 
         return $this->redirectToPostedUrl();
     }
@@ -214,15 +214,15 @@ class StaticController extends BaseController
         $category = (string)$request->getRequiredBodyParam('category');
         $key = (string)$request->getRequiredBodyParam('key');
 
-        $source = TranslatorPro::$plugin->sources->getByCategory($category);
+        $source = Translingua::$plugin->sources->getByCategory($category);
 
         if ($source === null) {
             throw new NotFoundHttpException("No translation source found for “$category”.");
         }
 
-        TranslatorPro::$plugin->translations->deleteKey($source, $key);
+        Translingua::$plugin->translations->deleteKey($source, $key);
 
-        return $this->asSuccess(Craft::t('translator-pro', 'String deleted.'));
+        return $this->asSuccess(Craft::t('translingua', 'String deleted.'));
     }
 
     /**
@@ -232,11 +232,11 @@ class StaticController extends BaseController
     {
         $this->requirePostRequest();
 
-        TranslatorPro::$plugin->scanner->invalidate();
+        Translingua::$plugin->scanner->invalidate();
 
-        $count = count(TranslatorPro::$plugin->scanner->getStrings());
+        $count = count(Translingua::$plugin->scanner->getStrings());
 
-        $this->setSuccessFlash(Craft::t('translator-pro', '{count} strings found.', ['count' => $count]));
+        $this->setSuccessFlash(Craft::t('translingua', '{count} strings found.', ['count' => $count]));
 
         return $this->redirectToPostedUrl();
     }
@@ -249,14 +249,14 @@ class StaticController extends BaseController
     {
         $this->requirePostRequest();
 
-        if (!TranslatorPro::$plugin->canUseAi()) {
-            $this->setFailFlash(Craft::t('translator-pro', 'AI translations require the Plus edition.'));
+        if (!Translingua::$plugin->canUseAi()) {
+            $this->setFailFlash(Craft::t('translingua', 'AI translations require the Plus edition.'));
             return null;
         }
 
-        if (!TranslatorPro::$plugin->translator->verify()) {
-            $this->setFailFlash(Craft::t('translator-pro', 'The connection to the AI provider isn’t working: {message}', [
-                'message' => TranslatorPro::$plugin->translator->getVerificationError() ?? '',
+        if (!Translingua::$plugin->translator->verify()) {
+            $this->setFailFlash(Craft::t('translingua', 'The connection to the AI provider isn’t working: {message}', [
+                'message' => Translingua::$plugin->translator->getVerificationError() ?? '',
             ]));
 
             return null;
@@ -266,15 +266,15 @@ class StaticController extends BaseController
         $category = (string)$request->getRequiredBodyParam('category');
         $locale = (string)$request->getRequiredBodyParam('locale');
 
-        $source = TranslatorPro::$plugin->sources->getByCategory($category);
+        $source = Translingua::$plugin->sources->getByCategory($category);
 
         if ($source === null) {
             throw new NotFoundHttpException("No translation source found for “$category”.");
         }
 
-        $strings = TranslatorPro::$plugin->translations->getSourceStrings($source);
-        $overrides = TranslatorPro::$plugin->translations->getOverrides($source, $locale);
-        $base = TranslatorPro::$plugin->translations->getBaseTranslations($source, $locale);
+        $strings = Translingua::$plugin->translations->getSourceStrings($source);
+        $overrides = Translingua::$plugin->translations->getOverrides($source, $locale);
+        $base = Translingua::$plugin->translations->getBaseTranslations($source, $locale);
 
         $missing = [];
 
@@ -286,12 +286,12 @@ class StaticController extends BaseController
         }
 
         if ($missing === []) {
-            $this->setSuccessFlash(Craft::t('translator-pro', 'Nothing left to translate.'));
+            $this->setSuccessFlash(Craft::t('translingua', 'Nothing left to translate.'));
             return $this->redirectToPostedUrl();
         }
 
         try {
-            $translated = TranslatorPro::$plugin->translator->translate(
+            $translated = Translingua::$plugin->translator->translate(
                 $missing,
                 $source->sourceLanguage,
                 $locale,
@@ -301,9 +301,9 @@ class StaticController extends BaseController
             return null;
         }
 
-        TranslatorPro::$plugin->translations->saveOverrides($source, $locale, $translated);
+        Translingua::$plugin->translations->saveOverrides($source, $locale, $translated);
 
-        $this->setSuccessFlash(Craft::t('translator-pro', '{count} strings translated.', [
+        $this->setSuccessFlash(Craft::t('translingua', '{count} strings translated.', [
             'count' => count($translated),
         ]));
 

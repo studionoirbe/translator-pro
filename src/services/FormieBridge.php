@@ -1,14 +1,14 @@
 <?php
 
-namespace studionoir\translatorpro\services;
+namespace studionoir\translingua\services;
 
 use Craft;
 use craft\base\Component;
 use craft\helpers\Json;
-use studionoir\translatorpro\models\TranslationResult;
-use studionoir\translatorpro\records\FormSettings;
-use studionoir\translatorpro\translators\TranslatorException;
-use studionoir\translatorpro\TranslatorPro;
+use studionoir\translingua\models\TranslationResult;
+use studionoir\translingua\records\FormSettings;
+use studionoir\translingua\translators\TranslatorException;
+use studionoir\translingua\Translingua;
 
 /**
  * Everything Formie-specific lives here, behind `isAvailable()`, so the rest of
@@ -128,12 +128,12 @@ class FormieBridge extends Component
             // A silently dropped save is how you end up translating into the
             // wrong language and not knowing why.
             Craft::error(sprintf(
-                "Couldn't save Translator Pro settings for form %d: %s",
+                "Couldn't save Translingua settings for form %d: %s",
                 $formId,
                 Json::encode($record->getErrors()),
             ), __METHOD__);
 
-            throw new \RuntimeException(Craft::t('translator-pro', 'Couldn’t save the form’s translation settings.'));
+            throw new \RuntimeException(Craft::t('translingua', 'Couldn’t save the form’s translation settings.'));
         }
     }
 
@@ -153,12 +153,12 @@ class FormieBridge extends Component
         $result = new TranslationResult();
 
         if ($form === null) {
-            $result->errors[] = Craft::t('translator-pro', 'Form not found.');
+            $result->errors[] = Craft::t('translingua', 'Form not found.');
             return $result;
         }
 
         if ($sourceLanguage !== null && $sourceLanguage === $targetLanguage) {
-            $result->errors[] = Craft::t('translator-pro', 'The source and target language are the same.');
+            $result->errors[] = Craft::t('translingua', 'The source and target language are the same.');
             return $result;
         }
 
@@ -196,7 +196,7 @@ class FormieBridge extends Component
 
         foreach ($byFormat as $format => $group) {
             try {
-                $translated += TranslatorPro::$plugin->translator->translate(
+                $translated += Translingua::$plugin->translator->translate(
                     $group,
                     $sourceLanguage,
                     $targetLanguage,
@@ -259,8 +259,8 @@ class FormieBridge extends Component
         }
 
         $labels = [
-            'submitActionMessage' => Craft::t('translator-pro', 'Submission message'),
-            'errorMessage' => Craft::t('translator-pro', 'Error message'),
+            'submitActionMessage' => Craft::t('translingua', 'Submission message'),
+            'errorMessage' => Craft::t('translingua', 'Error message'),
         ];
 
         foreach (self::FORM_RICH_TEXT as $attr) {
@@ -427,11 +427,11 @@ class FormieBridge extends Component
     private function attributeLabel(string $attr): string
     {
         return match ($attr) {
-            'label' => Craft::t('translator-pro', 'Label'),
-            'placeholder' => Craft::t('translator-pro', 'Placeholder'),
-            'instructions' => Craft::t('translator-pro', 'Instructions'),
-            'errorMessage' => Craft::t('translator-pro', 'Error message'),
-            'defaultValue' => Craft::t('translator-pro', 'Default value'),
+            'label' => Craft::t('translingua', 'Label'),
+            'placeholder' => Craft::t('translingua', 'Placeholder'),
+            'instructions' => Craft::t('translingua', 'Instructions'),
+            'errorMessage' => Craft::t('translingua', 'Error message'),
+            'defaultValue' => Craft::t('translingua', 'Default value'),
             default => $attr,
         };
     }
