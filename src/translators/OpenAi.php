@@ -61,7 +61,7 @@ class OpenAi extends BaseTranslator
         return $this->parseLlmResponse($content, $texts);
     }
 
-    public function testConnection(): bool
+    protected function runConnectionTest(): bool
     {
         $result = $this->translate(['Hello'], 'en', 'nl');
 

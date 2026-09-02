@@ -74,7 +74,7 @@ class DeepL extends BaseTranslator
         return $translations;
     }
 
-    public function testConnection(): bool
+    protected function runConnectionTest(): bool
     {
         $response = $this->request('GET', $this->host() . '/v2/usage', [
             'headers' => $this->headers(),
@@ -91,9 +91,11 @@ class DeepL extends BaseTranslator
     public function getUsage(): ?array
     {
         try {
-            $response = $this->request('GET', $this->host() . '/v2/usage', [
+            // Rendered as part of the settings screen, so it gets the short
+            // timeout: a missing usage line beats a page that never arrives.
+            $response = $this->quickly(fn() => $this->request('GET', $this->host() . '/v2/usage', [
                 'headers' => $this->headers(),
-            ]);
+            ]));
         } catch (TranslatorException) {
             return null;
         }

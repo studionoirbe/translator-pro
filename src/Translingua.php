@@ -10,6 +10,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\TemplateEvent;
 use craft\helpers\Cp;
+use craft\services\ProjectConfig;
 use craft\services\UserPermissions;
 use craft\web\Application as WebApplication;
 use craft\web\UrlManager;
@@ -69,12 +70,19 @@ class Translingua extends Plugin
 
     /**
      * @inheritdoc
+     *
+     * The order is load-bearing, not cosmetic. Craft reads this list as least
+     * to most feature-rich: `reset()` is the edition a fresh install lands on
+     * when the store doesn't name one it recognises, and `end()` is the edition
+     * it considers the top of the range. Listed the other way round, installing
+     * Lite quietly installed Plus and switching back read as an upgrade, which
+     * sends the Plugin Store off to the buy flow instead of switching.
      */
     public static function editions(): array
     {
         return [
-            self::EDITION_PLUS,
             self::EDITION_LITE,
+            self::EDITION_PLUS,
         ];
     }
 
@@ -106,6 +114,7 @@ class Translingua extends Plugin
         $this->registerPermissions();
         $this->registerFormieTab();
         $this->registerSourceToggles();
+        $this->registerEditionListener();
 
         // Everything below only makes sense once Craft is fully booted.
         Craft::$app->onInit(function() {
@@ -114,11 +123,14 @@ class Translingua extends Plugin
     }
 
     /**
-     * Whether the Pro (AI) features are available.
+     * Whether the Plus (AI) features are available.
+     *
+     * `>=` rather than an exact match, so anything Craft ranks at or above Plus
+     * in {@see editions()} keeps the AI features instead of silently losing them.
      */
     public function isPlus(): bool
     {
-        return $this->is(self::EDITION_PLUS);
+        return $this->is(self::EDITION_PLUS, '>=');
     }
 
     /**
@@ -206,6 +218,38 @@ class Translingua extends Plugin
         $item['subnav'] = $subNav;
 
         return $item;
+    }
+
+    /**
+     * Keeps the plugin honest about its own edition.
+     *
+     * Craft has no event for an edition switch, but it writes the new handle to
+     * project config, so that's what's watched. Anything remembered about the
+     * old edition is dropped: a Lite install must not inherit a "connection
+     * verified" flag from the Plus install it came from, and a fresh upgrade
+     * must re-prove the connection rather than trust a stale one.
+     */
+    private function registerEditionListener(): void
+    {
+        $path = ProjectConfig::PATH_PLUGINS . '.' . $this->id . '.edition';
+
+        $handler = function() {
+            // A switch must never fail because of housekeeping, so nothing in
+            // here is allowed to bubble up and take the edition change with it.
+            try {
+                $this->translator->forgetVerification();
+            } catch (\Throwable $e) {
+                Craft::warning(
+                    "Couldn't reset the connection state after an edition change: {$e->getMessage()}",
+                    __METHOD__,
+                );
+            }
+        };
+
+        Craft::$app->getProjectConfig()
+            ->onAdd($path, $handler)
+            ->onUpdate($path, $handler)
+            ->onRemove($path, $handler);
     }
 
     /**
@@ -532,9 +576,8 @@ JS;
                 $event->rules['translingua/static'] = 'translingua/static/index';
                 $event->rules['translingua/static/<category:[\w\-\.]+>'] = 'translingua/static/edit';
 
-                // AI translations (Pro)
+                // AI translations (Plus)
                 $event->rules['translingua/ai'] = 'translingua/batch/index';
-                $event->rules['translingua/ai/new'] = 'translingua/batch/new';
 
                 // Settings
                 $event->rules['translingua/settings'] = 'translingua/settings/index';

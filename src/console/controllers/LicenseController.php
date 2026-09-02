@@ -37,6 +37,7 @@ class LicenseController extends Controller
      */
     public function actionSetEdition(string $edition): int
     {
+        $plugin = Translingua::$plugin;
         $editions = Translingua::editions();
 
         if (!in_array($edition, $editions, true)) {
@@ -49,10 +50,43 @@ class LicenseController extends Controller
             return ExitCode::USAGE;
         }
 
+        if ($plugin->edition === $edition) {
+            $this->stdout("Translingua is already on the $edition edition." . PHP_EOL, Console::FG_YELLOW);
+
+            return ExitCode::OK;
+        }
+
+        // The edition lives in project config, so a read-only config refuses
+        // the write. Saying that up front beats an exception trace.
+        if (!Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+            $this->stderr(
+                'Editions are stored in project config, which is read-only while '
+                . 'allowAdminChanges is off. Turn it on for this environment, or set '
+                . 'the edition in project config and apply it.' . PHP_EOL,
+                Console::FG_RED,
+            );
+
+            return ExitCode::CONFIG;
+        }
+
         try {
-            Craft::$app->getPlugins()->switchEdition(Translingua::$plugin->id, $edition);
+            Craft::$app->getPlugins()->switchEdition($plugin->id, $edition);
         } catch (\Throwable $e) {
             $this->stderr("Couldn't switch edition: {$e->getMessage()}" . PHP_EOL, Console::FG_RED);
+
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        // Read it back rather than trusting the call: a project config write
+        // that silently didn't land would otherwise be reported as a success.
+        $active = Craft::$app->getPlugins()->getPluginInfo($plugin->id)['edition'] ?? null;
+
+        if ($active !== $edition) {
+            $this->stderr(sprintf(
+                'Asked for the %s edition, but Translingua is on %s.' . PHP_EOL,
+                $edition,
+                $active ?? 'an unknown edition',
+            ), Console::FG_RED);
 
             return ExitCode::UNSPECIFIED_ERROR;
         }

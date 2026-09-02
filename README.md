@@ -53,13 +53,21 @@ Or install it from the Plugin Store in the control panel.
 ## Editions
 
 **Lite** is free and covers static translations. **Plus** adds everything AI.
+The edition handles are `lite` and `plus`, in that order — Craft reads the list
+as least to most feature-rich, and the Plugin Store listing has to use the same
+two handles for installing and switching to land on the edition you picked.
 
 Plus is normally activated through the Plugin Store. On a local or path-repository
 install you can switch editions from the command line:
 
 ```bash
 php craft translingua/license/set-edition plus
+php craft translingua/license/set-edition lite
+php craft translingua/license/edition          # prints the active one
 ```
+
+Editions live in project config, so switching needs `allowAdminChanges` on for
+that environment.
 
 ---
 
@@ -161,7 +169,7 @@ on their own settings screen, beside Craft's other switches. Turn it off and tha
 source is left alone entirely: no translate buttons on its entries, no page
 button, and it stops appearing as a choice in AI translations.
 
-The toggle is a Pro control, so it only appears on Pro installs — on Lite there
+The toggle is a Plus control, so it only appears on Plus installs — on Lite there
 would be nothing for it to switch.
 
 ### Batch translations
@@ -282,7 +290,7 @@ position, and refuse to write any value Craft considers shared between sites.
 
 ## Licence
 
-Proprietary. The Lite edition may be used free of charge; Pro requires a paid
+Proprietary. The Lite edition may be used free of charge; Plus requires a paid
 licence per Craft install. See [LICENSE.md](LICENSE.md).
 
 ## Support

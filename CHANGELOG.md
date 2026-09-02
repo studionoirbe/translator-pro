@@ -1,5 +1,21 @@
 # Release Notes for Translingua
 
+## 1.0.3 - 2026-09-02
+
+### Fixed
+
+- Installing Translingua from the Plugin Store installed the Plus edition when Lite was picked. `editions()` listed Plus first, and Craft reads that list as least to most feature-rich — so Plus was both the fallback a fresh install landed on and the edition Craft considered the top of the range. The list is back in the right order.
+- Switching back down to Lite left the Plugin Store spinning forever. Same cause: with the order inverted, the switch read as an upgrade, so it never came back as a plain edition change. Switching now completes and reports what it did.
+- The **Test connection** button reported “Connected” for a provider that answered but failed the check, contradicting the banner at the top of the same screen. It now reports what actually happened, and makes one round trip instead of two.
+- A slow or unreachable provider could leave the settings screen loading for two minutes. Checks an admin is waiting on now use a short timeout and say the provider couldn’t be reached, instead of surfacing a raw cURL error.
+
+### Changed
+
+- Switching editions clears anything remembered about the previous one, so a Lite install can’t inherit a “connection verified” flag and an upgrade re-proves the connection rather than trusting a stale result.
+- Opening the AI translations screen on Lite now explains why and lands on the settings screen, instead of a bare 403. Requests expecting JSON still get the status code.
+- The settings screen names the active edition handle, shows the command for switching in the other direction, and marks the AI section as inactive on Lite instead of offering a **Test connection** button that can only fail.
+- Removed `translingua/ai/new`, a route that pointed at an action that was never written.
+
 ## 1.0.0 - 2026-08-28
 
 Initial release.

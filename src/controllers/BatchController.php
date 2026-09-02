@@ -4,6 +4,7 @@ namespace studionoir\translingua\controllers;
 
 use Craft;
 use craft\helpers\StringHelper;
+use craft\helpers\UrlHelper;
 use studionoir\translingua\jobs\TranslateElementsJob;
 use studionoir\translingua\services\Batch;
 use studionoir\translingua\Translingua;
@@ -22,7 +23,24 @@ class BatchController extends BaseController
         }
 
         if (!Translingua::$plugin->isPlus()) {
-            throw new ForbiddenHttpException(Craft::t('translingua', 'AI translations require the Plus edition.'));
+            $message = Craft::t('translingua', 'AI translations require the Plus edition.');
+
+            // A bookmarked link, or a tab that was open when the edition
+            // changed, shouldn't land on a bare 403. Say what happened and put
+            // the admin somewhere they can act on it. Anything expecting JSON
+            // still gets the status code it knows how to read.
+            if ($this->request->getAcceptsJson()) {
+                throw new ForbiddenHttpException($message);
+            }
+
+            $this->setFailFlash($message);
+
+            // Returning false leaves this redirect as the response, which is
+            // what Craft's own controllers do when beforeAction turns an
+            // action away.
+            $this->redirect(UrlHelper::cpUrl('translingua/settings'));
+
+            return false;
         }
 
         $this->requirePermission(Translingua::PERMISSION_AI);

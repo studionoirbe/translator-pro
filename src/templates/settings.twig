@@ -19,14 +19,33 @@
                     <span class="light">{{ "Lite"|t('translingua') }}</span> —
                     {{ "Static translations only. Upgrade to Plus for AI translations, per-field translate buttons and batch runs."|t('translingua') }}
                 </p>
-                <p class="light smalltext">
-                    {{ "Locally you can switch editions with:"|t('translingua') }}
-                    <code>php craft translingua/license/set-edition plus</code>
+            {% endif %}
+            {# The handle, not just the label: if the Plugin Store ever installs
+               an edition other than the one that was picked, this is where it
+               shows. #}
+            <p class="light smalltext">
+                {{ "Active edition handle:"|t('translingua') }} <code>{{ edition }}</code>
+            </p>
+            <p class="light smalltext">
+                {{ "Locally you can switch editions with:"|t('translingua') }}
+                <code>php craft translingua/license/set-edition {{ isPlus ? 'lite' : 'plus' }}</code>
+            </p>
+            {% if unknownLicensedEdition %}
+                <p class="error smalltext">
+                    {{ "The licence is for an edition this build doesn’t define: “{edition}”. Until the Plugin Store listing uses the handles above, installing and switching editions will land on the wrong one."|t('translingua', { edition: unknownLicensedEdition }) }}
                 </p>
             {% endif %}
         </div>
 
         <h2>{{ "AI provider"|t('translingua') }}</h2>
+
+        {% if not isPlus %}
+            <div class="pane" style="margin-bottom: 20px;">
+                <p class="light">
+                    {{ "These settings are kept, but nothing below does anything on Lite. They take effect the moment the install switches to Plus."|t('translingua') }}
+                </p>
+            </div>
+        {% endif %}
 
         {% if isPlus %}
             <div class="pane" style="margin-bottom: 20px;">
@@ -95,8 +114,11 @@
 
         <div class="field">
             <div class="input">
-                <button type="button" class="btn" id="tp-test">{{ "Test connection"|t('translingua') }}</button>
-                <span id="tp-test-result" class="light" style="margin-inline-start: 8px;"></span>
+                {# Disabled rather than hidden on Lite: a button that always
+                   answers "not on this edition" is just a slower way of saying
+                   what the note above already says. #}
+                <button type="button" class="btn{{ isPlus ? '' : ' disabled' }}" id="tp-test"{{ isPlus ? '' : ' disabled' }}>{{ "Test connection"|t('translingua') }}</button>
+                <span id="tp-test-result" class="light" style="margin-inline-start: 8px;">{% if not isPlus %}{{ "Available on Plus."|t('translingua') }}{% endif %}</span>
             </div>
         </div>
 
@@ -237,6 +259,10 @@
 
 {% js %}
 document.getElementById('tp-test').addEventListener('click', function () {
+    if (this.disabled) {
+        return;
+    }
+
     var button = this;
     var result = document.getElementById('tp-test-result');
     var form = document.getElementById('tp-settings-form');
