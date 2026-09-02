@@ -37,12 +37,26 @@ class SettingsController extends BaseController
             $usage = (new DeepL($settings))->getUsage();
         }
 
+        // The Plugin Store hands Craft an edition handle from the listing, and
+        // Craft quietly falls back to the first edition when it doesn't
+        // recognise it — which is how picking Lite can end up installing Plus.
+        // If the licence names an edition this build doesn't define, that
+        // mismatch is worth saying out loud rather than leaving to be
+        // discovered by installing the wrong thing.
+        $licensedEdition = Craft::$app->getPlugins()->getPluginInfo($plugin->id)['licensedEdition'] ?? null;
+
+        if ($licensedEdition !== null && in_array($licensedEdition, Translingua::editions(), true)) {
+            $licensedEdition = null;
+        }
+
         return $this->renderTemplate('translingua/settings', [
             'title' => Craft::t('translingua', 'Settings'),
             'plugin' => $plugin,
             'settings' => $settings,
             'providerOptions' => Settings::providerOptions(),
             'isPlus' => $plugin->isPlus(),
+            'edition' => $plugin->edition,
+            'unknownLicensedEdition' => $licensedEdition,
             'usage' => $usage,
             'verified' => $verified,
             'verificationError' => $plugin->translator->getVerificationError(),
@@ -112,7 +126,6 @@ class SettingsController extends BaseController
 
         try {
             $translator = $plugin->translator->getProviderFor($settings);
-            $translator->testConnection();
         } catch (TranslatorException $e) {
             return $this->asFailure($e->getMessage());
         } catch (\Throwable $e) {
@@ -121,9 +134,17 @@ class SettingsController extends BaseController
             return $this->asFailure($e->getMessage());
         }
 
-        // Remember the result against these exact credentials. If they match
-        // what's saved, the translate buttons light up without a second check.
-        $plugin->translator->verify(true, $settings);
+        // One round trip, not two: verify() runs the same check and remembers
+        // the result against these exact credentials, so a pass here lights the
+        // buttons up without a second call. Its answer is what gets reported —
+        // a provider that responds but fails the check is not a success, and
+        // saying otherwise would contradict the banner at the top of the page.
+        if (!$plugin->translator->verify(true, $settings)) {
+            return $this->asFailure(
+                $plugin->translator->getVerificationError($settings)
+                    ?? Craft::t('translingua', 'The connection test didn’t succeed.'),
+            );
+        }
 
         return $this->asSuccess(Craft::t('translingua', 'Connected to {provider}.', [
             'provider' => $translator->getName(),

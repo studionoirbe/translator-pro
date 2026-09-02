@@ -74,7 +74,7 @@ class Anthropic extends BaseTranslator
         return $this->parseLlmResponse('{"translations":' . $content, $texts);
     }
 
-    public function testConnection(): bool
+    protected function runConnectionTest(): bool
     {
         $result = $this->translate(['Hello'], 'en', 'nl');
 

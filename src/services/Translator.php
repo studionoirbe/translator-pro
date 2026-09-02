@@ -177,10 +177,14 @@ class Translator extends Component
 
     /**
      * The reason the last verification attempt failed, if there was one.
+     *
+     * Takes the settings the attempt was made with, since failures are
+     * remembered per credentials — asking about the saved ones after testing
+     * an unsaved key would report on the wrong attempt.
      */
-    public function getVerificationError(): ?string
+    public function getVerificationError(?Settings $settings = null): ?string
     {
-        $settings = Translingua::$plugin->getSettings();
+        $settings ??= Translingua::$plugin->getSettings();
         $error = Craft::$app->getCache()->get($this->failedKey($settings->credentialsFingerprint()));
 
         return is_string($error) ? $error : null;

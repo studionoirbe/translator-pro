@@ -5,6 +5,7 @@ namespace studionoir\translingua\translators;
 use Craft;
 use craft\base\Component;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use studionoir\translingua\models\Settings;
@@ -14,8 +15,25 @@ use studionoir\translingua\models\Settings;
  */
 abstract class BaseTranslator extends Component implements TranslatorInterface
 {
+    /**
+     * A real translation can legitimately take a while, so it's given room.
+     */
+    private const TIMEOUT = 120;
+    private const CONNECT_TIMEOUT = 15;
+
+    /**
+     * A check that only exists to answer "is this key any good?" doesn't get
+     * the same patience. It runs while somebody is looking at a control panel
+     * screen, and a screen that sits spinning for two minutes tells them less
+     * than a failure does.
+     */
+    private const QUICK_TIMEOUT = 20;
+    private const QUICK_CONNECT_TIMEOUT = 8;
+
     protected Settings $settings;
     private ?Client $client = null;
+    private ?Client $quickClient = null;
+    private bool $quick = false;
 
     public function __construct(Settings $settings, array $config = [])
     {
@@ -49,11 +67,53 @@ abstract class BaseTranslator extends Component implements TranslatorInterface
         return $key;
     }
 
+    /**
+     * Verifies the credentials with one cheap round trip.
+     *
+     * Final on purpose: the timeout is the point. Providers supply the request
+     * itself in {@see runConnectionTest()}.
+     */
+    final public function testConnection(): bool
+    {
+        return $this->quickly(fn() => $this->runConnectionTest());
+    }
+
+    /**
+     * The provider's own connection check.
+     */
+    abstract protected function runConnectionTest(): bool;
+
+    /**
+     * Runs something on the short timeout — for checks an admin is waiting on.
+     *
+     * @template T
+     * @param callable():T $callback
+     * @return T
+     */
+    protected function quickly(callable $callback): mixed
+    {
+        $was = $this->quick;
+        $this->quick = true;
+
+        try {
+            return $callback();
+        } finally {
+            $this->quick = $was;
+        }
+    }
+
     protected function client(): Client
     {
+        if ($this->quick) {
+            return $this->quickClient ??= Craft::createGuzzleClient([
+                'timeout' => self::QUICK_TIMEOUT,
+                'connect_timeout' => self::QUICK_CONNECT_TIMEOUT,
+            ]);
+        }
+
         return $this->client ??= Craft::createGuzzleClient([
-            'timeout' => 120,
-            'connect_timeout' => 15,
+            'timeout' => self::TIMEOUT,
+            'connect_timeout' => self::CONNECT_TIMEOUT,
         ]);
     }
 
@@ -68,6 +128,16 @@ abstract class BaseTranslator extends Component implements TranslatorInterface
     {
         try {
             $response = $this->client()->request($method, $url, $options);
+        } catch (ConnectException $e) {
+            // Before RequestException: a timed-out or unresolvable host is a
+            // subclass of it in older Guzzle releases, and the raw cURL text
+            // ("cURL error 28: Operation timed out…") tells an admin nothing
+            // they can act on.
+            Craft::error("{$this->getName()} was unreachable: {$e->getMessage()}", __METHOD__);
+
+            throw new TranslatorException(Craft::t('translingua', 'Couldn’t reach {provider}. Check the connection and try again.', [
+                'provider' => $this->getName(),
+            ]), 0, $e);
         } catch (RequestException $e) {
             $body = $e->getResponse()?->getBody()->getContents() ?? '';
             $status = $e->getResponse()?->getStatusCode();
