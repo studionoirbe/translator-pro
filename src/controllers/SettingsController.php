@@ -39,7 +39,7 @@ class SettingsController extends BaseController
 
         // The Plugin Store hands Craft an edition handle from the listing, and
         // Craft quietly falls back to the first edition when it doesn't
-        // recognise it — which is how picking Lite can end up installing Plus.
+        // recognise it — which is how picking Standard can end up installing Plus.
         // If the licence names an edition this build doesn't define, that
         // mismatch is worth saying out loud rather than leaving to be
         // discovered by installing the wrong thing.

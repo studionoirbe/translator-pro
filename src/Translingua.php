@@ -30,7 +30,7 @@ use yii\base\Event;
 /**
  * Translingua
  *
- * Free (Lite) edition
+ * Free (Standard) edition
  *  - Static template translations, Enupal-Translate style
  *  - Formie translation overrides
  *  - Override the language files of any installed plugin
@@ -56,7 +56,10 @@ use yii\base\Event;
  */
 class Translingua extends Plugin
 {
-    public const EDITION_LITE = 'lite';
+    // Must match the edition handles on the Craft Console listing exactly:
+    // the Plugin Store compares them by handle, and anything it doesn't
+    // recognise falls back to the first edition below.
+    public const EDITION_STANDARD = 'standard';
     public const EDITION_PLUS = 'plus';
 
     public const PERMISSION_STATIC = 'translingua:manageStaticTranslations';
@@ -75,13 +78,13 @@ class Translingua extends Plugin
      * to most feature-rich: `reset()` is the edition a fresh install lands on
      * when the store doesn't name one it recognises, and `end()` is the edition
      * it considers the top of the range. Listed the other way round, installing
-     * Lite quietly installed Plus and switching back read as an upgrade, which
+     * Standard quietly installed Plus and switching back read as an upgrade, which
      * sends the Plugin Store off to the buy flow instead of switching.
      */
     public static function editions(): array
     {
         return [
-            self::EDITION_LITE,
+            self::EDITION_STANDARD,
             self::EDITION_PLUS,
         ];
     }
@@ -225,7 +228,7 @@ class Translingua extends Plugin
      *
      * Craft has no event for an edition switch, but it writes the new handle to
      * project config, so that's what's watched. Anything remembered about the
-     * old edition is dropped: a Lite install must not inherit a "connection
+     * old edition is dropped: a Standard install must not inherit a "connection
      * verified" flag from the Plus install it came from, and a fresh upgrade
      * must re-prove the connection rather than trust a stale one.
      */
@@ -295,7 +298,7 @@ class Translingua extends Plugin
 
                 // The tab is Plus-only: the language it sets exists purely to
                 // tell the AI what to translate into, and the translate button
-                // below it is Plus too. On Lite the whole tab would be inert.
+                // below it is Plus too. On Standard the whole tab would be inert.
                 // Gated on the edition rather than on aiIsReady(), so a key that
                 // has momentarily stopped verifying doesn't hide the setting.
                 if (!$this->isPlus()) {
@@ -440,7 +443,7 @@ class Translingua extends Plugin
     private function renderSourceToggle(?string $uid, bool $on, string $instructions, string $anchor): void
     {
         // Everything this switch governs — the field buttons, the page button,
-        // AI translations — is Plus only, so on Lite it would be a control that
+        // AI translations — is Plus only, so on Standard it would be a control that
         // does nothing.
         if (!$this->isPlus()) {
             return;
@@ -533,7 +536,7 @@ JS;
      */
     private function storeSourceToggle(string $attribute, string $uid): void
     {
-        // Matches renderSourceToggle(): if Lite never drew the field, a posted
+        // Matches renderSourceToggle(): if Standard never drew the field, a posted
         // value didn't come from us and must not rewrite the setting.
         if (!$this->isPlus() || !Craft::$app instanceof WebApplication) {
             return;

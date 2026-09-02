@@ -33,7 +33,7 @@ class LicenseController extends Controller
     /**
      * Switches the edition.
      *
-     * @param string $edition `lite` or `plus`
+     * @param string $edition `standard` or `plus`
      */
     public function actionSetEdition(string $edition): int
     {
