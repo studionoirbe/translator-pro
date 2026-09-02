@@ -1,5 +1,12 @@
 # Release Notes for Translingua
 
+## 1.0.4 - 2026-09-02
+
+### Changed
+
+- Renamed the free edition from **Lite** to **Standard**, handle `lite` → `standard`. The Plugin Store matches editions by handle against the Craft Console listing, and the listing calls the free edition Standard — so nothing ever matched: the store kept offering **Install** for an edition that was already installed, and pressing it posted a `switch-edition` for a handle `editions()` doesn't define, which is the request that leaves the store spinning. The paid edition keeps the handle `plus`.
+- Installs carrying the old `lite` handle in project config resolve to `standard` on their own — same edition, same features, nothing to migrate. A `plus` install is untouched.
+
 ## 1.0.3 - 2026-09-02
 
 ### Fixed

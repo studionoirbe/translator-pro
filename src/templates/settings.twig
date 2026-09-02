@@ -16,7 +16,7 @@
                 <p><span class="success">{{ "Plus"|t('translingua') }}</span> — {{ "AI translations are enabled."|t('translingua') }}</p>
             {% else %}
                 <p>
-                    <span class="light">{{ "Lite"|t('translingua') }}</span> —
+                    <span class="light">{{ "Standard"|t('translingua') }}</span> —
                     {{ "Static translations only. Upgrade to Plus for AI translations, per-field translate buttons and batch runs."|t('translingua') }}
                 </p>
             {% endif %}
@@ -28,7 +28,7 @@
             </p>
             <p class="light smalltext">
                 {{ "Locally you can switch editions with:"|t('translingua') }}
-                <code>php craft translingua/license/set-edition {{ isPlus ? 'lite' : 'plus' }}</code>
+                <code>php craft translingua/license/set-edition {{ isPlus ? 'standard' : 'plus' }}</code>
             </p>
             {% if unknownLicensedEdition %}
                 <p class="error smalltext">
@@ -42,7 +42,7 @@
         {% if not isPlus %}
             <div class="pane" style="margin-bottom: 20px;">
                 <p class="light">
-                    {{ "These settings are kept, but nothing below does anything on Lite. They take effect the moment the install switches to Plus."|t('translingua') }}
+                    {{ "These settings are kept, but nothing below does anything on Standard. They take effect the moment the install switches to Plus."|t('translingua') }}
                 </p>
             </div>
         {% endif %}
@@ -114,7 +114,7 @@
 
         <div class="field">
             <div class="input">
-                {# Disabled rather than hidden on Lite: a button that always
+                {# Disabled rather than hidden on Standard: a button that always
                    answers "not on this edition" is just a slower way of saying
                    what the note above already says. #}
                 <button type="button" class="btn{{ isPlus ? '' : ' disabled' }}" id="tp-test"{{ isPlus ? '' : ' disabled' }}>{{ "Test connection"|t('translingua') }}</button>
